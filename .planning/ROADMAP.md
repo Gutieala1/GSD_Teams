@@ -31,10 +31,10 @@ the next phase builds on it — the order is not arbitrary.
 **Plans**: 4 plans
 
 Plans:
-- [ ] 01-01: Repo structure + TEAM.md starter template + config schema
-- [ ] 01-02: execute-plan.md patch (`review_team_gate` step with flag + TEAM.md guard)
-- [ ] 01-03: settings.md patch (7th toggle, spread-safe config write)
-- [ ] 01-04: install.sh (pattern-based file copy + patch application)
+- [ ] 01-01-PLAN.md — Extension repo scaffold + templates/TEAM.md starter template (3 example roles)
+- [ ] 01-02-PLAN.md — scripts/patch-execute-plan.py (review_team_gate step, pattern-based insertion)
+- [ ] 01-03-PLAN.md — scripts/patch-settings.py (7th toggle + spread-safe config write, 4 touch points)
+- [ ] 01-04-PLAN.md — install.sh (GSD detection, file copy, patch invocation, TEAM.md guard, config update)
 
 ### Phase 2: Sanitizer + Artifact Schema
 **Goal**: After each plan executes with review_team enabled and a TEAM.md present, a sanitized artifact is written to `{phase-dir}/{phase}-{plan}-ARTIFACT.md`. The artifact contains zero executor reasoning — only observable facts about what was built.
