@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-25)
 ## Current Position
 
 Phase: 2 of 5 (Sanitizer + Artifact Schema)
-Plan: 1 of 2 in current phase
-Status: Phase 1 complete — ready to start Phase 2
-Last activity: 2026-02-26 — Completed 01-04 install.sh installer — Phase 1 complete
+Plan: 2 of 2 in current phase
+Status: Plan 02-01 complete — ready for Plan 02-02
+Last activity: 2026-02-26 — Completed 02-01 sanitizer agent
 
-Progress: [████░░░░░░] 40%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: ~1.75 min
-- Total execution time: ~5 min
+- Total plans completed: 5
+- Average duration: ~1.6 min
+- Total execution time: ~7 min
 
 **By Phase:**
 
@@ -32,6 +32,7 @@ Progress: [████░░░░░░] 40%
 | Phase 01-extension-scaffold-gsd-integration P02 | 8 | 2 tasks | 4 files |
 | Phase 01-extension-scaffold-gsd-integration P03 | 2 | 1 task | 1 file |
 | Phase 01-extension-scaffold-gsd-integration P04 | 2 | 1 task | 4 files |
+| Phase 02-sanitizer-artifact-schema P01 | 2 | 1 task | 1 file |
 
 ## Accumulated Context
 
@@ -58,6 +59,11 @@ Key architectural decisions from project initialization:
 - **01-04**: jq is optional — python3 json module fallback used for config.json update; avoids hard dependency since python3 already required
 - **01-04**: GSD_DIR = $HOME/.claude (parent of get-shit-done/) for clean subpath construction in all references
 - **01-04**: EXT_INSTALL_DIR = $GSD_DIR/get-shit-done-review-team — matches @-reference path in review_team_gate step
+- **02-01**: Sanitizer uses Read + Write tools only — minimal tool surface for content-transform agent
+- **02-01**: ARTIFACT.md includes YAML frontmatter (phase, plan, source, generated) for machine parsing and audit trail
+- **02-01**: Mixed fact+reasoning sentences split at reasoning boundary — factual prefix preserved, reasoning suffix stripped
+- **02-01**: Completeness check runs before write: file path audit, section population, stack change audit, reasoning leak scan
+- **02-01**: Inputs passed via `<inputs>` tags (summary_path, artifact_path, phase, plan, plan_name)
 
 ### Pending Todos
 
@@ -66,11 +72,11 @@ None yet.
 ### Blockers/Concerns
 
 - **Open**: Does AI merge in `reapply-patches` handle XML `<step>` blocks reliably across GSD version changes? (Test during Phase 1 — deferred: reapply-patches workflow is Phase 5)
-- **Open**: Sanitized ARTIFACT.md written to disk vs. passed inline — product decision for Phase 2
+- **Resolved (02-01)**: ARTIFACT.md written to disk at `.planning/phases/{phase_dir}/{phase}-{plan}-ARTIFACT.md` — audit trail, context efficiency, debuggability
 - **Open**: REVIEW-REPORT.md per-phase vs. global — product decision for Phase 4
 
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 01-04-PLAN.md — install.sh installer, Phase 1 complete
+Stopped at: Completed 02-01-PLAN.md — sanitizer agent
 Resume file: None
