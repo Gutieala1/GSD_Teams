@@ -66,9 +66,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Finding JSON schema + severity rubric definition
-- [ ] 03-02: `gsd-reviewer.md` agent (role injection, isolation enforcement, evidence requirement, JSON return)
-- [ ] 03-03: `review-team.md` workflow — single reviewer spawning + JSON collection step
+- [ ] 03-01-PLAN.md — schemas/finding-schema.md (7-field JSON schema + 5-level severity rubric + tie-breaking rule)
+- [ ] 03-02-PLAN.md — agents/gsd-reviewer.md (parameterized via role injection, isolation enforcement, evidence requirement, JSON output)
+- [ ] 03-03-PLAN.md — workflows/review-team.md update (spawn_reviewers implemented for single reviewer + JSON collection)
 
 ### Phase 4: Parallel Pipeline + Synthesizer + Routing
 **Goal**: All reviewer roles in TEAM.md fire in a single Task() turn (true parallelism). The synthesizer collects findings, deduplicates, routes deterministically — critical findings block execution, major findings route to rework or debugger, minor findings log and continue. REVIEW-REPORT.md is populated after every reviewed plan.
