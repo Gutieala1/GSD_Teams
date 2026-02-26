@@ -37,6 +37,7 @@ Progress: [██████████] 100% (Phase 3 complete)
 | Phase 03-single-reviewer-finding-schema P01 | 1 | 1 tasks | 1 files |
 | Phase 03-single-reviewer-finding-schema P02 | 3 | 1 task | 1 file |
 | Phase 03-single-reviewer-finding-schema P03 | 1 | 1 task | 1 file |
+| Phase 04-parallel-pipeline-synthesizer-routing P01 | 2 | 2 tasks | 1 file |
 | Phase 04-parallel-pipeline-synthesizer-routing P02 | 1 | 1 tasks | 1 files |
 
 ## Accumulated Context
@@ -88,6 +89,12 @@ Key architectural decisions from project initialization:
 - [Phase 03-03]: ARTIFACT_PATH reused from sanitize step in spawn_reviewers — not recomputed (single source of truth)
 - [Phase 03-03]: Empty findings handled as valid pipeline exit: log '0 findings (no issues in domain)' and continue — not an error
 - [Phase 03-03]: return_status updated to REVIEWER COMPLETE format; Phase 4 synthesize placeholder preserved intact
+- [Phase 04-01]: spawn_reviewers reads ALL TEAM.md roles in a single Read before issuing any Task() — single source of truth for role_definitions
+- [Phase 04-01]: Explicit 'SINGLE MESSAGE' instruction in spawn_reviewers to enforce PIPE-01 parallel execution guarantee
+- [Phase 04-01]: combined_findings uses flat all_findings array (not nested-by-reviewer) — synthesizer semantic dedup easier on flat structure
+- [Phase 04-01]: Zero-findings early exit writes REVIEW-REPORT.md and skips synthesize entirely — log_and_continue is correct for 0 findings with no synthesis overhead
+- [Phase 04-01]: return_status updated to PIPELINE COMPLETE — removes all Phase 3 placeholder language, adds FINAL_ROUTING + REVIEW-REPORT.md path + routing-conditional outcome messaging
+- [Phase 04-01]: REVIEW-REPORT.md written by spawn_reviewers (zero-findings path) and synthesize step (non-zero path) — not by gsd-review-synthesizer.md agent
 - [Phase 04-02]: Synthesizer prohibited from reading files — ONLY input is combined_findings in prompt tags (no file I/O)
 - [Phase 04-02]: No-new-findings guard appears in both role block AND critical_rules — double enforcement at agent level
 - [Phase 04-02]: synthesis_note field is the sanctioned outlet for cross-finding observations — never add them as unique_findings
@@ -107,5 +114,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 04-02-PLAN.md — gsd-review-synthesizer.md agent (Phase 4, Plan 2 of 3)
+Stopped at: Completed 04-01-PLAN.md — parallel spawn_reviewers + PIPELINE COMPLETE return_status (Phase 4, Plan 1 of 3)
 Resume file: None
