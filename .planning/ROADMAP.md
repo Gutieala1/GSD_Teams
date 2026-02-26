@@ -11,7 +11,7 @@ the next phase builds on it — the order is not arbitrary.
 ## Phases
 
 - [x] **Phase 1: Extension Scaffold + GSD Integration** — Install cleanly, toggle appears in settings, pipeline activates/no-ops correctly
-- [ ] **Phase 2: Sanitizer + Artifact Schema** — Zero executor reasoning leaks past the isolation gate
+- [x] **Phase 2: Sanitizer + Artifact Schema** — Zero executor reasoning leaks past the isolation gate
 - [ ] **Phase 3: Single Reviewer + Finding Schema** — One reviewer fires, produces structured evidence-backed findings, stays in its lane
 - [ ] **Phase 4: Parallel Pipeline + Synthesizer + Routing** — All reviewers run in parallel, synthesizer routes deterministically, REVIEW-REPORT.md populated
 - [ ] **Phase 5: /gsd:new-reviewer + Starter Roles + Docs** — Users can build roles, 3 starters ship, README documents everything
@@ -49,8 +49,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — gsd-review-sanitizer.md agent (6-part GSD structure, strip/preserve schema, completeness checks, DO NOT guards)
-- [ ] 02-02-PLAN.md — review-team.md workflow skeleton (TEAM.md validation + sanitizer Task() spawning + Phase 3/4 placeholders)
+- [x] 02-01-PLAN.md — gsd-review-sanitizer.md agent (6-part GSD structure, strip/preserve schema, completeness checks, DO NOT guards)
+- [x] 02-02-PLAN.md — review-team.md workflow skeleton (TEAM.md validation + sanitizer Task() spawning + Phase 3/4 placeholders)
 
 ### Phase 3: Single Reviewer + Finding Schema
 **Goal**: One reviewer role from TEAM.md fires successfully. It receives only the sanitized artifact and its own role definition. It produces at least one finding with a direct quote as evidence, assigns severity using the rubric, and stays strictly within its declared domain.
@@ -113,7 +113,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Extension Scaffold + GSD Integration | 4/4 | Complete | 2026-02-26 |
-| 2. Sanitizer + Artifact Schema | 0/2 | Not started | - |
+| 2. Sanitizer + Artifact Schema | 2/2 | Complete | 2026-02-26 |
 | 3. Single Reviewer + Finding Schema | 0/3 | Not started | - |
 | 4. Parallel Pipeline + Synthesizer + Routing | 0/3 | Not started | - |
 | 5. /gsd:new-reviewer + Starter Roles + Docs | 0/3 | Not started | - |
