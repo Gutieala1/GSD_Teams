@@ -146,31 +146,31 @@ After the sanitizer returns, verify ARTIFACT.md was written to disk:
 </step>
 
 <step name="spawn_reviewers">
-## Step 3: Spawn Reviewer (Phase 3 — Single Reviewer)
+## Step 3: Spawn All Reviewers in Parallel (Phase 4)
 
-Phase 3 implements this step for exactly ONE reviewer — the first valid role from TEAM.md.
-Phase 4 will expand to parallel spawning of all roles.
+Phase 4 spawns ALL valid roles from TEAM.md in a single orchestrator message — true parallelism.
 
-### Select First Valid Role
+### Part A — Extract All Role Definition Texts
 
-Use the valid roles list from the validate_team step. Take the first role:
-```
-first_role_name = roles_list[0]
-```
+Read `.planning/TEAM.md` using the Read tool.
 
-### Extract Role Definition Text
+For EACH role_name in `roles_list` (populated by validate_team):
+- Find the `## Role: {role_name}` header (case-insensitive match on the name from the YAML `name:` field)
+- Extract all text from that header to the NEXT `## Role:` header (exclusive), or to EOF if no next role exists
+- Store as `role_definitions[role_name]`
 
-Read `.planning/TEAM.md` using the Read tool. Extract the full text of the section for `first_role_name`:
+This single TEAM.md read populates ALL role definitions before any spawning begins.
 
-1. Find the line matching `## Role: {first_role_name}` (case-insensitive match on the name from the YAML `name:` field)
-2. Extract ALL text from that `## Role:` header line to the NEXT `## Role:` header line (exclusive), or to end-of-file if no next role exists
-3. This entire extracted text is the `role_definition_text` to inject
+If the re-read TEAM.md produces a different roles list than validate_team produced, log a WARNING:
+`WARNING: TEAM.md roles changed between validate_team and spawn_reviewers — using re-read list as authoritative`
+Use the re-read list going forward.
 
-Example: For role name `security-auditor`, find `## Role: Security Auditor` (or equivalent), extract everything until `## Role: Rules Lawyer` begins.
+### Part B — Spawn All Reviewers — Single Message
 
-The `role_definition_text` must include the full role section: YAML code block, focus description, review checklist, severity thresholds, and routing hints — everything written for that role.
+Issue ALL of the following Task() calls in a SINGLE MESSAGE — do not await between them.
+All reviewers run simultaneously. Execution does not advance to collection until ALL complete.
 
-### Spawn Reviewer
+For each role_name in roles_list, issue one Task() block:
 
 ```
 Task(
@@ -188,7 +188,7 @@ Task(
     </inputs>
 
     <role_definition>
-    ${role_definition_text}
+    ${role_definitions[role_name]}
     </role_definition>
 
     <execution_context>
@@ -198,20 +198,61 @@ Task(
 )
 ```
 
+In practice this means writing out one Task() block per role in a single message.
+For 3 starter roles: 3 Task() blocks issued together.
+
 Note: `${ARTIFACT_PATH}` is the value computed in the sanitize step. Do not recompute it — reuse the same path.
 
-### Collect and Log JSON Return
+### Part C — Collect and Merge Findings
 
-After the reviewer returns:
+After ALL reviewer Tasks complete:
 
-1. Parse the reviewer's return as JSON to extract the `findings` array
-2. Log: `Review Team: Reviewer {first_role_name}: {N} finding(s)`
-3. If the findings array is empty: log `Review Team: Reviewer {first_role_name}: 0 findings (no issues in domain)` and continue — this is valid, not an error
+For each reviewer return:
+1. Parse JSON to extract the `findings` array
+2. Log: `Review Team: {role_name}: {N} finding(s)`
+3. If findings array is empty: log `Review Team: {role_name}: 0 findings (clean domain)` — not an error
 4. If findings are present: log each finding's id, severity, and description for audit:
    `  [{id}] [{severity}] {description}`
-5. Store the full findings JSON for the return_status block
+5. Append all findings to combined_findings array (each finding already has a `reviewer` field)
 
-Phase 3 stops here — Phase 4 adds synthesis and deterministic routing.
+Build the combined_findings structure:
+```json
+{
+  "phase": "${PHASE_ID}",
+  "plan": "${PLAN_NUM}",
+  "reviewer_count": N,
+  "all_findings": [ ... merged flat array of all findings from all reviewers ... ],
+  "per_reviewer": {
+    "{role_name}": { "finding_count": N }
+  }
+}
+```
+
+### Part D — Early Exit for Zero Findings
+
+If combined all_findings is empty (ALL reviewers returned 0 findings):
+- Log: `Review Team: all reviewers — 0 findings, routing to log_and_continue`
+- Write empty plan section to REVIEW-REPORT.md at path: `.planning/phases/${PHASE_ID}/REVIEW-REPORT.md`
+  - Check if file exists (Read tool):
+    - If it does NOT exist: write the file with header `# Review Report — Phase ${PHASE_ID}` followed by the plan section
+    - If it EXISTS: Read the existing file, append new plan section to end, Write back
+  - Empty plan section format:
+    ```
+    ## Plan ${PLAN_NUM} — {ISO timestamp}
+
+    **Reviewers:** {comma-separated role names}
+    **Findings:** 0
+    **Action:** log_and_continue
+
+    No findings — all reviewers returned clean.
+
+    ---
+    ```
+- Proceed directly to return_status with `routing: log_and_continue, findings: 0`
+- SKIP the synthesize step — no synthesis needed for empty findings
+
+If combined all_findings is non-empty:
+- Proceed to the synthesize step with combined_findings JSON
 </step>
 
 <step name="synthesize">
