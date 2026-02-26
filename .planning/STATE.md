@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Catch compounding AI errors at the plan boundary — before they become the foundation for the next plan.
-**Current focus:** Phase 5 in progress — Plan 01 complete; starter roles upgraded to production-ready
+**Current focus:** Phase 5 in progress — Plans 01-02 complete; /gsd:new-reviewer command and workflow created
 
 ## Current Position
 
 Phase: 5 of 5 (New Reviewer, Starter Roles, Docs)
-Plan: 1 of ? in current phase (05-01 complete)
-Status: 05-01 complete — starter roles upgraded, callouts removed, Rules Lawyer criterion generalized
-Last activity: 2026-02-26 — Completed 05-01 starter roles upgrade (templates/TEAM.md + .planning/TEAM.md)
+Plan: 2 of ? in current phase (05-02 complete)
+Status: 05-02 complete — /gsd:new-reviewer workflow (7-step guided role creation) and command file created
+Last activity: 2026-02-26 — Completed 05-02 new-reviewer command + workflow
 
 Progress: [██████████] Phase 5 in progress
 
@@ -41,6 +41,7 @@ Progress: [██████████] Phase 5 in progress
 | Phase 04-parallel-pipeline-synthesizer-routing P02 | 1 | 1 tasks | 1 files |
 | Phase 04-parallel-pipeline-synthesizer-routing P03 | 2 | 1 task | 1 file |
 | Phase 05-new-reviewer-starter-roles-docs P01 | 1 | 1 tasks | 2 files |
+| Phase 05-new-reviewer-starter-roles-docs P02 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,11 @@ Key architectural decisions from project initialization:
 - [Phase 05-01]: Starter roles are production-ready out of the box — no user editing required after install
 - [Phase 05-01]: Rules Lawyer criterion generalized from CONVENTIONS.md to 'coding conventions followed consistently with the existing codebase' — applicable to any GSD project
 - [Phase 05-01]: Preamble updated to 'starter roles' to match actual role status (no longer examples)
+- [Phase 05-02]: 7-step flow: check_team_md → gather_domain → gather_name → gather_criteria → gather_severity → decision_gate → write_role
+- [Phase 05-02]: All AskUserQuestion headers capped at 12 characters (Custom Focus and Display Name use exactly 12)
+- [Phase 05-02]: Decision gate (step 6) shows full role preview before writing — satisfies ROLE-02 requirement
+- [Phase 05-02]: write_role handles both TEAM.md exists (append + update frontmatter roles list) and does-not-exist (create stub header + role)
+- [Phase 05-02]: Command file references installed path (~/.claude/get-shit-done-review-team/) not source path — works after install.sh copies it
 
 ### Pending Todos
 
@@ -125,5 +131,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 05-01-PLAN.md — starter roles upgraded to production-ready (callouts removed, Rules Lawyer criterion generalized)
+Stopped at: Completed 05-02-PLAN.md — /gsd:new-reviewer command and 7-step workflow (workflows/new-reviewer.md + commands/gsd/new-reviewer.md)
 Resume file: None
