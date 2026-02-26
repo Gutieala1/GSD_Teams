@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Catch compounding AI errors at the plan boundary — before they become the foundation for the next plan.
-**Current focus:** Phase 3 complete — all 3 plans done; ready for Phase 4 parallel reviewer synthesis
+**Current focus:** Phase 4 in progress — Plan 02 complete (synthesizer agent); ready for Plan 03 routing implementation
 
 ## Current Position
 
 Phase: 4 of 5 (Parallel Pipeline + Synthesizer + Routing)
-Plan: 1 of 3 in current phase
-Status: Phase 3 verified and complete — ready to start Phase 4
-Last activity: 2026-02-26 — Completed 03-03 review-team spawn_reviewers (Phase 3 complete)
+Plan: 2 of 3 in current phase
+Status: Phase 4 Plan 02 complete — gsd-review-synthesizer.md agent created
+Last activity: 2026-02-26 — Completed 04-02 gsd-review-synthesizer.md agent
 
 Progress: [██████████] 100% (Phase 3 complete)
 
@@ -37,6 +37,7 @@ Progress: [██████████] 100% (Phase 3 complete)
 | Phase 03-single-reviewer-finding-schema P01 | 1 | 1 tasks | 1 files |
 | Phase 03-single-reviewer-finding-schema P02 | 3 | 1 task | 1 file |
 | Phase 03-single-reviewer-finding-schema P03 | 1 | 1 task | 1 file |
+| Phase 04-parallel-pipeline-synthesizer-routing P02 | 1 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,11 @@ Key architectural decisions from project initialization:
 - [Phase 03-03]: ARTIFACT_PATH reused from sanitize step in spawn_reviewers — not recomputed (single source of truth)
 - [Phase 03-03]: Empty findings handled as valid pipeline exit: log '0 findings (no issues in domain)' and continue — not an error
 - [Phase 03-03]: return_status updated to REVIEWER COMPLETE format; Phase 4 synthesize placeholder preserved intact
+- [Phase 04-02]: Synthesizer prohibited from reading files — ONLY input is combined_findings in prompt tags (no file I/O)
+- [Phase 04-02]: No-new-findings guard appears in both role block AND critical_rules — double enforcement at agent level
+- [Phase 04-02]: synthesis_note field is the sanctioned outlet for cross-finding observations — never add them as unique_findings
+- [Phase 04-02]: synthesis_errors array for self-reporting traceability violations — workflow catches and handles
+- [Phase 04-02]: SYNTH-NNN uniform ID format for all synthesizer output regardless of whether finding was deduped or pass-through
 
 ### Pending Todos
 
@@ -96,10 +102,10 @@ None yet.
 
 - **Open**: Does AI merge in `reapply-patches` handle XML `<step>` blocks reliably across GSD version changes? (Test during Phase 1 — deferred: reapply-patches workflow is Phase 5)
 - **Resolved (02-01)**: ARTIFACT.md written to disk at `.planning/phases/{phase_dir}/{phase}-{plan}-ARTIFACT.md` — audit trail, context efficiency, debuggability
-- **Open**: REVIEW-REPORT.md per-phase vs. global — product decision for Phase 4
+- **Resolved (04-RESEARCH)**: REVIEW-REPORT.md per-phase — SYNTH-05 requirement text specifies {phase-dir}/REVIEW-REPORT.md explicitly; per-phase is the correct answer
 
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 03-03-PLAN.md — review-team.md spawn_reviewers Phase 3 implementation (Phase 3, Plan 3 of 3 — Phase 3 COMPLETE)
+Stopped at: Completed 04-02-PLAN.md — gsd-review-synthesizer.md agent (Phase 4, Plan 2 of 3)
 Resume file: None
