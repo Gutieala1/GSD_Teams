@@ -12,7 +12,7 @@ the next phase builds on it — the order is not arbitrary.
 
 - [x] **Phase 1: Extension Scaffold + GSD Integration** — Install cleanly, toggle appears in settings, pipeline activates/no-ops correctly
 - [x] **Phase 2: Sanitizer + Artifact Schema** — Zero executor reasoning leaks past the isolation gate
-- [ ] **Phase 3: Single Reviewer + Finding Schema** — One reviewer fires, produces structured evidence-backed findings, stays in its lane
+- [x] **Phase 3: Single Reviewer + Finding Schema** — One reviewer fires, produces structured evidence-backed findings, stays in its lane
 - [ ] **Phase 4: Parallel Pipeline + Synthesizer + Routing** — All reviewers run in parallel, synthesizer routes deterministically, REVIEW-REPORT.md populated
 - [ ] **Phase 5: /gsd:new-reviewer + Starter Roles + Docs** — Users can build roles, 3 starters ship, README documents everything
 
@@ -66,9 +66,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — schemas/finding-schema.md (7-field JSON schema + 5-level severity rubric + tie-breaking rule)
-- [ ] 03-02-PLAN.md — agents/gsd-reviewer.md (parameterized via role injection, isolation enforcement, evidence requirement, JSON output)
-- [ ] 03-03-PLAN.md — workflows/review-team.md update (spawn_reviewers implemented for single reviewer + JSON collection)
+- [x] 03-01-PLAN.md — schemas/finding-schema.md (7-field JSON schema + 5-level severity rubric + tie-breaking rule)
+- [x] 03-02-PLAN.md — agents/gsd-reviewer.md (parameterized via role injection, isolation enforcement, evidence requirement, JSON output)
+- [x] 03-03-PLAN.md — workflows/review-team.md update (spawn_reviewers implemented for single reviewer + JSON collection)
 
 ### Phase 4: Parallel Pipeline + Synthesizer + Routing
 **Goal**: All reviewer roles in TEAM.md fire in a single Task() turn (true parallelism). The synthesizer collects findings, deduplicates, routes deterministically — critical findings block execution, major findings route to rework or debugger, minor findings log and continue. REVIEW-REPORT.md is populated after every reviewed plan.
@@ -114,6 +114,6 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Extension Scaffold + GSD Integration | 4/4 | Complete | 2026-02-26 |
 | 2. Sanitizer + Artifact Schema | 2/2 | Complete | 2026-02-26 |
-| 3. Single Reviewer + Finding Schema | 0/3 | Not started | - |
+| 3. Single Reviewer + Finding Schema | 3/3 | Complete | 2026-02-26 |
 | 4. Parallel Pipeline + Synthesizer + Routing | 0/3 | Not started | - |
 | 5. /gsd:new-reviewer + Starter Roles + Docs | 0/3 | Not started | - |
