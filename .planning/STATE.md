@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Catch compounding AI errors at the plan boundary — before they become the foundation for the next plan.
-**Current focus:** Phase 4 in progress — Plan 02 complete (synthesizer agent); ready for Plan 03 routing implementation
+**Current focus:** Phase 4 complete — all 3 plans done; review pipeline fully implemented end-to-end
 
 ## Current Position
 
 Phase: 4 of 5 (Parallel Pipeline + Synthesizer + Routing)
-Plan: 2 of 3 in current phase
-Status: Phase 4 Plan 02 complete — gsd-review-synthesizer.md agent created
-Last activity: 2026-02-26 — Completed 04-02 gsd-review-synthesizer.md agent
+Plan: 3 of 3 in current phase (Phase 4 complete)
+Status: Phase 4 complete — synthesize step + routing + REVIEW-REPORT.md implemented
+Last activity: 2026-02-25 — Completed 04-03 synthesize step + routing + REVIEW-REPORT.md (Phase 4 complete)
 
 Progress: [██████████] 100% (Phase 3 complete)
 
@@ -39,6 +39,7 @@ Progress: [██████████] 100% (Phase 3 complete)
 | Phase 03-single-reviewer-finding-schema P03 | 1 | 1 task | 1 file |
 | Phase 04-parallel-pipeline-synthesizer-routing P01 | 2 | 2 tasks | 1 file |
 | Phase 04-parallel-pipeline-synthesizer-routing P02 | 1 | 1 tasks | 1 files |
+| Phase 04-parallel-pipeline-synthesizer-routing P03 | 2 | 1 task | 1 file |
 
 ## Accumulated Context
 
@@ -100,6 +101,12 @@ Key architectural decisions from project initialization:
 - [Phase 04-02]: synthesis_note field is the sanctioned outlet for cross-finding observations — never add them as unique_findings
 - [Phase 04-02]: synthesis_errors array for self-reporting traceability violations — workflow catches and handles
 - [Phase 04-02]: SYNTH-NNN uniform ID format for all synthesizer output regardless of whether finding was deduped or pass-through
+- [Phase 04-03]: REVIEW-REPORT.md uses Read-then-Write append — not overwrite; existing content preserved on second and later plans
+- [Phase 04-03]: Critical severity check BEFORE reading synthesizer.overall_routing — deterministic workflow-level override, not agent judgment
+- [Phase 04-03]: block_and_escalate always requires user decision via AskUserQuestion — overrides auto_advance mode
+- [Phase 04-03]: return_status only reached after log_and_continue or after user responds to block_and_escalate; send_for_rework and send_to_debugger halt without reaching it
+- [Phase 04-03]: source_finding_ids validation in workflow performs independent traceability check — defense in depth beyond agent self-check
+- [Phase 04-03]: Fallback on validation failure uses raw combined_findings.all_findings (un-deduplicated) with severity-based routing
 
 ### Pending Todos
 
@@ -113,6 +120,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-26
-Stopped at: Completed 04-01-PLAN.md — parallel spawn_reviewers + PIPELINE COMPLETE return_status (Phase 4, Plan 1 of 3)
+Last session: 2026-02-25
+Stopped at: Completed 04-03-PLAN.md — synthesize step + routing + REVIEW-REPORT.md (Phase 4 complete, all 3 plans done)
 Resume file: None
