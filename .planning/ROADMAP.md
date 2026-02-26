@@ -102,9 +102,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: 3 starter roles (Security Auditor, Performance Analyst, Rules Lawyer) + role template format
-- [ ] 05-02: `new-reviewer.md` workflow + `/gsd:new-reviewer` command file
-- [ ] 05-03: README.md + version compatibility check in install.sh
+- [ ] 05-01-PLAN.md — Fix 3 starter roles: remove "Example role" callouts, generalize Rules Lawyer criterion (both templates/TEAM.md and .planning/TEAM.md)
+- [ ] 05-02-PLAN.md — workflows/new-reviewer.md (7-step guided workflow) + commands/gsd/new-reviewer.md (slash command entry point)
+- [ ] 05-03-PLAN.md — README.md (installation, post-update, TEAM.md format, first-run) + install.sh version check + commands/gsd copy
 
 ## Progress
 
