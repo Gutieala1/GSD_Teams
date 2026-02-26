@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Catch compounding AI errors at the plan boundary — before they become the foundation for the next plan.
-**Current focus:** Phase 5 in progress — Plans 01-02 complete; /gsd:new-reviewer command and workflow created
+**Current focus:** ALL 5 PHASES COMPLETE — GSD Review Team extension fully built and documented
 
 ## Current Position
 
-Phase: 5 of 5 (New Reviewer, Starter Roles, Docs)
-Plan: 2 of ? in current phase (05-02 complete)
-Status: 05-02 complete — /gsd:new-reviewer workflow (7-step guided role creation) and command file created
-Last activity: 2026-02-26 — Completed 05-02 new-reviewer command + workflow
+Phase: 5 of 5 (New Reviewer, Starter Roles, Docs) — COMPLETE
+Plan: 3 of 3 in current phase (05-03 complete)
+Status: ALL PHASES DONE — Phase 5 complete; README.md + install.sh updates finalized; extension ready for use
+Last activity: 2026-02-25 — Completed 05-03 README.md + install.sh updates (Phase 5 complete — milestone complete)
 
-Progress: [██████████] Phase 5 in progress
+Progress: [██████████] ALL 5 PHASES COMPLETE
 
 ## Performance Metrics
 
@@ -42,6 +42,7 @@ Progress: [██████████] Phase 5 in progress
 | Phase 04-parallel-pipeline-synthesizer-routing P03 | 2 | 1 task | 1 file |
 | Phase 05-new-reviewer-starter-roles-docs P01 | 1 | 1 tasks | 2 files |
 | Phase 05-new-reviewer-starter-roles-docs P02 | 2 | 2 tasks | 2 files |
+| Phase 05-new-reviewer-starter-roles-docs P03 | ~10 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,9 @@ Key architectural decisions from project initialization:
 - [Phase 05-02]: Decision gate (step 6) shows full role preview before writing — satisfies ROLE-02 requirement
 - [Phase 05-02]: write_role handles both TEAM.md exists (append + update frontmatter roles list) and does-not-exist (create stub header + role)
 - [Phase 05-02]: Command file references installed path (~/.claude/get-shit-done-review-team/) not source path — works after install.sh copies it
+- [Phase 05-03]: Post-update procedure uses re-run install.sh — NOT /gsd:reapply-patches; README.md and Section 9 completion message both direct users to `bash install.sh` as the single restore command
+- [Phase 05-03]: Version check is warn-only — installer proceeds regardless of GSD version mismatch (hint, not hard requirement)
+- [Phase 05-03]: sort -V used for semver range check — no custom semver parser needed; two printf | sort -V calls handle min/max range cleanly
 
 ### Pending Todos
 
@@ -130,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-26
-Stopped at: Completed 05-02-PLAN.md — /gsd:new-reviewer command and 7-step workflow (workflows/new-reviewer.md + commands/gsd/new-reviewer.md)
+Last session: 2026-02-25
+Stopped at: Completed 05-03-PLAN.md — README.md + install.sh updates (Phase 5 complete — ALL 5 PHASES DONE)
 Resume file: None
