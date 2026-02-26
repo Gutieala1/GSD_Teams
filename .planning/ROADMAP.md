@@ -85,9 +85,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Parallel Task() spawning + findings collection (all reviewers in one turn, named output files)
-- [ ] 04-02: `gsd-review-synthesizer.md` agent (dedup, no-new-findings guard, routing enum)
-- [ ] 04-03: Routing implementation — deterministic severity-minimum rules + REVIEW-REPORT.md writer
+- [ ] 04-01-PLAN.md — spawn_reviewers replacement: all TEAM.md roles in parallel (single-message Task() pattern) + combined findings collection
+- [ ] 04-02-PLAN.md — agents/gsd-review-synthesizer.md (dedup, no-new-findings guard via source_finding_ids, routing enum output)
+- [ ] 04-03-PLAN.md — synthesize step implementation: synthesizer spawn + validation + deterministic routing enforcement + REVIEW-REPORT.md writer + all 4 routing actions
 
 ### Phase 5: /gsd:new-reviewer + Starter Roles + Docs
 **Goal**: Users can run `/gsd:new-reviewer` and get a working reviewer role written to TEAM.md through a guided conversation. Three production-ready starter roles ship with the extension. README documents installation, usage, and the post-update workflow.
