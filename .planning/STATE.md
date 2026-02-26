@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Catch compounding AI errors at the plan boundary — before they become the foundation for the next plan.
-**Current focus:** Phase 4 complete — all 3 plans done; review pipeline fully implemented end-to-end
+**Current focus:** Phase 5 in progress — Plan 01 complete; starter roles upgraded to production-ready
 
 ## Current Position
 
-Phase: 4 of 5 (Parallel Pipeline + Synthesizer + Routing)
-Plan: 3 of 3 in current phase (Phase 4 complete)
-Status: Phase 4 complete — synthesize step + routing + REVIEW-REPORT.md implemented
-Last activity: 2026-02-25 — Completed 04-03 synthesize step + routing + REVIEW-REPORT.md (Phase 4 complete)
+Phase: 5 of 5 (New Reviewer, Starter Roles, Docs)
+Plan: 1 of ? in current phase (05-01 complete)
+Status: 05-01 complete — starter roles upgraded, callouts removed, Rules Lawyer criterion generalized
+Last activity: 2026-02-26 — Completed 05-01 starter roles upgrade (templates/TEAM.md + .planning/TEAM.md)
 
-Progress: [██████████] 100% (Phase 3 complete)
+Progress: [██████████] Phase 5 in progress
 
 ## Performance Metrics
 
@@ -40,6 +40,7 @@ Progress: [██████████] 100% (Phase 3 complete)
 | Phase 04-parallel-pipeline-synthesizer-routing P01 | 2 | 2 tasks | 1 file |
 | Phase 04-parallel-pipeline-synthesizer-routing P02 | 1 | 1 tasks | 1 files |
 | Phase 04-parallel-pipeline-synthesizer-routing P03 | 2 | 1 task | 1 file |
+| Phase 05-new-reviewer-starter-roles-docs P01 | 1 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,9 @@ Key architectural decisions from project initialization:
 - [Phase 04-03]: return_status only reached after log_and_continue or after user responds to block_and_escalate; send_for_rework and send_to_debugger halt without reaching it
 - [Phase 04-03]: source_finding_ids validation in workflow performs independent traceability check — defense in depth beyond agent self-check
 - [Phase 04-03]: Fallback on validation failure uses raw combined_findings.all_findings (un-deduplicated) with severity-based routing
+- [Phase 05-01]: Starter roles are production-ready out of the box — no user editing required after install
+- [Phase 05-01]: Rules Lawyer criterion generalized from CONVENTIONS.md to 'coding conventions followed consistently with the existing codebase' — applicable to any GSD project
+- [Phase 05-01]: Preamble updated to 'starter roles' to match actual role status (no longer examples)
 
 ### Pending Todos
 
@@ -120,6 +124,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-25
-Stopped at: Completed 04-03-PLAN.md — synthesize step + routing + REVIEW-REPORT.md (Phase 4 complete, all 3 plans done)
+Last session: 2026-02-26
+Stopped at: Completed 05-01-PLAN.md — starter roles upgraded to production-ready (callouts removed, Rules Lawyer criterion generalized)
 Resume file: None
