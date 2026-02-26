@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-25)
+See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Catch compounding AI errors at the plan boundary — before they become the foundation for the next plan.
-**Current focus:** ALL 5 PHASES COMPLETE — GSD Review Team extension fully built and documented
+**Current focus:** v2.0 Agent Studio — evolving the review pipeline into a full project-aware agent studio
 
 ## Current Position
 
-Phase: 5 of 5 (New Reviewer, Starter Roles, Docs) — COMPLETE
-Plan: 3 of 3 in current phase (05-03 complete)
-Status: ALL PHASES DONE — Phase 5 complete; README.md + install.sh updates finalized; extension ready for use
-Last activity: 2026-02-25 — Completed 05-03 README.md + install.sh updates (Phase 5 complete — milestone complete)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v2.0 Agent Studio
+Last activity: 2026-02-26 — Milestone v2.0 Agent Studio started
 
-Progress: [██████████] ALL 5 PHASES COMPLETE
+Progress: [░░░░░░░░░░] v2.0 — 0 phases complete
 
 ## Performance Metrics
 

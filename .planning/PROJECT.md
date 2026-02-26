@@ -1,12 +1,33 @@
-# GSD Review Team
+# GSD Agent Studio
+
+## Current Milestone: v2.0 Agent Studio
+
+**Goal:** Evolve the review pipeline into a full agent studio — project-aware agents woven through planning, execution, and verification, created through a deliberate GSD-native workflow.
+
+**Target features:**
+- Agent model replacing reviewer model: configurable mode (advisory/autonomous), triggers across the full lifecycle (pre-plan, post-plan, post-phase, on-demand)
+- GSD-native agent creation: plan+execute workflow builds each agent — deliberate, not automatic
+- New-project integration: ask about agent team at project init, propose agents tailored to project goals
+- Agent Studio: `/gsd:team` roster command + conversational agent management
+- Agents embedded in planning, execution, and verification — not just post-execution review
+
+## Validated (v1.0 — GSD Review Team)
+
+- ✓ Sanitizer strips executor reasoning from SUMMARY.md → clean ARTIFACT.md — Phase 2
+- ✓ Parameterized reviewer agent spawns in isolation via Task() with role context — Phase 3
+- ✓ Parallel reviewer pipeline with combined_findings deduplication — Phase 4
+- ✓ Synthesizer routes findings: block_and_escalate / send_for_rework / send_to_debugger / log_and_continue — Phase 4
+- ✓ REVIEW-REPORT.md written on all routing paths before acting — Phase 4
+- ✓ /gsd:new-reviewer guided workflow + command — Phase 5
+- ✓ Starter roles (Security Auditor, Rules Lawyer, Performance Analyst) production-ready — Phase 5
+- ✓ install.sh idempotent with version check, commands/gsd copy, README — Phase 5
 
 ## Vision
 
-Open-source GSD extension that adds a multi-agent review pipeline to the execution workflow.
-After each plan executes, the pipeline sanitizes the output, spawns isolated reviewer agents
-(defined by the user in `.planning/TEAM.md`), collects independent findings, and routes them
-intelligently — catching compounding AI errors at the plan boundary before they become the
-foundation for the next plan.
+Open-source GSD extension that evolves from a review pipeline into a full agent studio.
+Agents are purpose-built collaborators — defined by project goals, woven through planning,
+execution, and verification — that catch errors, surface insights, and take autonomous action
+within their defined scope.
 
 ## Problem
 
@@ -171,9 +192,20 @@ Findings logged to `.planning/phases/XX-name/REVIEW-REPORT.md` per phase. Format
 - **No build step**: Installation is git clone + file copy + patch — no npm install required
 - **Backwards compatible**: `workflow.review_team` defaults to `false` — existing GSD users unaffected until they opt in
 
-## Open Questions
+## Open Questions (v2.0)
 
-- Should the repo ship built-in starter roles (Security Auditor, Performance Analyst, Rules Lawyer)?
-- How does `/gsd:update` interact with the core patch — does `reapply-patches` handle it automatically?
-- REVIEW-REPORT.md location: per-phase directory or a single global `.planning/REVIEW-REPORT.md`?
-- Should `/gsd:new-reviewer` offer a library of starter role templates to customize from?
+- What does the TEAM.md v2 schema look like? New fields: mode, triggers, tools, output_type
+- How do autonomous agents commit their artifacts — through GSD's commit tool or directly?
+- How does the pre-plan trigger interact with plan-phase — does an agent review PLAN.md before execution begins?
+- What does "agent history" look like in /gsd:team — per-agent log of findings/actions?
+- Should TEAM.md remain a single file or split into per-agent files as teams grow?
+
+## Resolved (v1.0)
+
+- ✓ Starter roles ship with the repo (Security Auditor, Performance Analyst, Rules Lawyer)
+- ✓ /gsd:update: reapply-patches handles core patch; users re-run install.sh after update
+- ✓ REVIEW-REPORT.md: per-phase directory (matches SUMMARY.md/ARTIFACT.md naming convention)
+- ✓ /gsd:new-reviewer: guided 7-step workflow (no template library needed for v1)
+
+---
+*Last updated: 2026-02-26 — Milestone v2.0 Agent Studio started*
