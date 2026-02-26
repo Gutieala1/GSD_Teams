@@ -12,13 +12,11 @@ Define your reviewer roles below. Each role runs in isolation — it sees only t
 execution artifact, never the plan, executor reasoning, or prior summaries.
 
 Run `/gsd:new-reviewer` to add a role through a guided conversation, or customize the
-example roles below directly.
+starter roles below directly.
 
 ---
 
 ## Role: Security Auditor
-
-> Example role — customize before use. Remove this callout when your role is ready.
 
 ```yaml
 name: security-auditor
@@ -46,8 +44,6 @@ focus: Security vulnerabilities and unsafe patterns
 
 ## Role: Rules Lawyer
 
-> Example role — customize before use. Remove this callout when your role is ready.
-
 ```yaml
 name: rules-lawyer
 focus: Consistency with stated requirements and project conventions
@@ -55,7 +51,7 @@ focus: Consistency with stated requirements and project conventions
 
 **What this role reviews:**
 - Do implemented behaviors match the plan's stated requirements?
-- Are coding conventions from CONVENTIONS.md followed?
+- Are coding conventions followed consistently with the existing codebase?
 - Are error handling patterns consistent with existing patterns?
 - Are API contracts honored as specified?
 
@@ -72,8 +68,6 @@ focus: Consistency with stated requirements and project conventions
 ---
 
 ## Role: Performance Analyst
-
-> Example role — customize before use. Remove this callout when your role is ready.
 
 ```yaml
 name: performance-analyst
