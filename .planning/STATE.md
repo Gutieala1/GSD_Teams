@@ -44,9 +44,16 @@ Key architectural decisions from project initialization:
 - **Init**: Routing is deterministic in workflow code — `critical → block_and_escalate` is hardcoded minimum, not a synthesizer judgment call
 - **Init**: Synthesizer prohibited from generating new findings — every finding must trace to a reviewer source
 - **Init**: Pattern-based patch insertion anchored on `<step name="offer_next">` — safe across GSD version updates
-- [Phase 01-extension-scaffold-gsd-integration]: Roles fully visible (not HTML-commented) in TEAM.md for easier onboarding
-- [Phase 01-extension-scaffold-gsd-integration]: YAML fenced code blocks inside role sections are machine-readable anchors for Phase 2 parser
-- [Phase 01-extension-scaffold-gsd-integration]: Three starter roles ship: Security Auditor, Rules Lawyer, Performance Analyst — covers security/correctness/performance review lanes
+- **01-01**: Roles fully visible (not HTML-commented) in TEAM.md for easier onboarding
+- **01-01**: YAML fenced code blocks inside role sections are machine-readable anchors for Phase 2 parser
+- **01-01**: Three starter roles ship: Security Auditor, Rules Lawyer, Performance Analyst — covers security/correctness/performance review lanes
+- **01-02**: Anchor `<step name="offer_next">` confirmed unique and stable — str.replace() with count=1 is safe
+- **01-02**: Idempotency guard uses content check (`name="review_team_gate"`) — not line numbers, resilient to file changes
+- **01-02**: review_team_gate reads CONFIG_CONTENT already in scope — no re-read, no gsd-tools.cjs changes needed
+- **01-02**: Three-branch gate logic: disabled (silent no-op) | TEAM.md missing (log+continue) | TEAM.md present (load @workflow)
+- **01-03**: Touch point 1 anchor covers full closing block (Per Milestone line + closing brackets + ])) to ensure correct insertion before AskUserQuestion closing
+- [01-03]: Two distinct spread variable names — update_config uses existing_config.workflow, save_as_defaults uses existing_workflow (different execution contexts in settings.md)
+- [01-03]: WARN on anchor not found (not ERROR) — allows partial application when settings.md has evolved, informs operator which touch points need attention
 
 ### Pending Todos
 
@@ -61,5 +68,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 01-01-PLAN.md — extension repo directory scaffold + TEAM.md starter template with 3 example roles
+Stopped at: Completed 01-03-PLAN.md — patch-settings.py patcher for GSD settings.md Review Team toggle
 Resume file: None
