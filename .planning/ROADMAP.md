@@ -13,7 +13,7 @@ the next phase builds on it — the order is not arbitrary.
 - [x] **Phase 1: Extension Scaffold + GSD Integration** — Install cleanly, toggle appears in settings, pipeline activates/no-ops correctly
 - [x] **Phase 2: Sanitizer + Artifact Schema** — Zero executor reasoning leaks past the isolation gate
 - [x] **Phase 3: Single Reviewer + Finding Schema** — One reviewer fires, produces structured evidence-backed findings, stays in its lane
-- [ ] **Phase 4: Parallel Pipeline + Synthesizer + Routing** — All reviewers run in parallel, synthesizer routes deterministically, REVIEW-REPORT.md populated
+- [x] **Phase 4: Parallel Pipeline + Synthesizer + Routing** — All reviewers run in parallel, synthesizer routes deterministically, REVIEW-REPORT.md populated
 - [ ] **Phase 5: /gsd:new-reviewer + Starter Roles + Docs** — Users can build roles, 3 starters ship, README documents everything
 
 ## Phase Details
@@ -85,9 +85,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — spawn_reviewers replacement: all TEAM.md roles in parallel (single-message Task() pattern) + combined findings collection
-- [ ] 04-02-PLAN.md — agents/gsd-review-synthesizer.md (dedup, no-new-findings guard via source_finding_ids, routing enum output)
-- [ ] 04-03-PLAN.md — synthesize step implementation: synthesizer spawn + validation + deterministic routing enforcement + REVIEW-REPORT.md writer + all 4 routing actions
+- [x] 04-01-PLAN.md — spawn_reviewers replacement: all TEAM.md roles in parallel (single-message Task() pattern) + combined findings collection
+- [x] 04-02-PLAN.md — agents/gsd-review-synthesizer.md (dedup, no-new-findings guard via source_finding_ids, routing enum output)
+- [x] 04-03-PLAN.md — synthesize step implementation: synthesizer spawn + validation + deterministic routing enforcement + REVIEW-REPORT.md writer + all 4 routing actions
 
 ### Phase 5: /gsd:new-reviewer + Starter Roles + Docs
 **Goal**: Users can run `/gsd:new-reviewer` and get a working reviewer role written to TEAM.md through a guided conversation. Three production-ready starter roles ship with the extension. README documents installation, usage, and the post-update workflow.
@@ -115,5 +115,5 @@ Plans:
 | 1. Extension Scaffold + GSD Integration | 4/4 | Complete | 2026-02-26 |
 | 2. Sanitizer + Artifact Schema | 2/2 | Complete | 2026-02-26 |
 | 3. Single Reviewer + Finding Schema | 3/3 | Complete | 2026-02-26 |
-| 4. Parallel Pipeline + Synthesizer + Routing | 0/3 | Not started | - |
+| 4. Parallel Pipeline + Synthesizer + Routing | 3/3 | Complete | 2026-02-25 |
 | 5. /gsd:new-reviewer + Starter Roles + Docs | 0/3 | Not started | - |
