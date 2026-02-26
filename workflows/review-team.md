@@ -256,17 +256,211 @@ If combined all_findings is non-empty:
 </step>
 
 <step name="synthesize">
-## Step 4: Synthesize and Route Findings
+## Step 4: Synthesize and Route Findings (Phase 4)
 
-[Phase 4 -- not yet implemented]
+### Part A — Spawn Synthesizer
 
-This step will:
-1. Receive all reviewer findings from spawn_reviewers step
-2. Spawn synthesizer agent to deduplicate and route findings
-3. Act on routing decision: block_and_escalate | send_for_rework | send_to_debugger | log_and_continue
-4. Write findings to REVIEW-REPORT.md
+Spawn the synthesizer agent with the combined findings JSON injected directly in the prompt (not written to a file first):
 
-See ROADMAP.md Phase 4 for design.
+```
+Task(
+  subagent_type="gsd-review-synthesizer",
+  prompt="
+    <objective>
+    Deduplicate cross-reviewer findings. Assign routing for each unique finding.
+    Return structured synthesis JSON.
+    </objective>
+
+    <inputs>
+    Phase: ${PHASE_ID}
+    Plan: ${PLAN_NUM}
+    </inputs>
+
+    <combined_findings>
+    ${combined_findings_json}
+    </combined_findings>
+
+    <execution_context>
+    @~/.claude/get-shit-done-review-team/agents/gsd-review-synthesizer.md
+    </execution_context>
+  "
+)
+```
+
+`combined_findings_json` is the combined findings JSON built at the end of the spawn_reviewers step.
+The combined findings JSON is passed directly in the prompt — NOT written to a file first.
+
+---
+
+### Part B — Validate No-New-Findings (before acting on routing)
+
+After synthesizer returns:
+
+1. Parse synthesizer JSON to extract `unique_findings` and `synthesis_errors`
+2. Check `synthesis_errors` array — if non-empty, log each error as WARNING:
+   `Review Team: WARNING — synthesis error: {error}`
+3. Build input_ids set from `combined_findings.all_findings` (all reviewer finding IDs):
+   `input_ids = {f.id for f in combined_findings.all_findings}`
+4. For each unique_finding in synthesizer output:
+   a. If `source_finding_ids` is empty or null:
+      log `Review Team: WARNING — finding {id} has no source_finding_ids (pipeline violation)`
+   b. For each source_id in `source_finding_ids`:
+      if source_id NOT in input_ids:
+      log `Review Team: WARNING — finding {id} has invalid source_finding_id {source_id}`
+5. If ANY validation failure detected:
+   log `Review Team: WARNING — synthesizer validation failed, using reviewer findings directly (fallback)`
+   Fallback: treat combined_findings.all_findings as-is (un-deduplicated), determine routing based on
+   highest severity in the raw findings using the same severity-to-routing mapping (critical →
+   block_and_escalate, high → send_for_rework, medium → send_to_debugger or send_for_rework, low/info
+   → log_and_continue).
+
+---
+
+### Part C — Apply Deterministic Routing Override (severity minimum)
+
+This check runs BEFORE reading `synthesizer.overall_routing`:
+
+```
+Step 1: HAS_CRITICAL = any unique_finding where severity == "critical"
+
+Step 2:
+  if HAS_CRITICAL:
+    FINAL_ROUTING = "block_and_escalate"
+    Log: "Review Team: critical finding detected — routing overridden to block_and_escalate (hardcoded minimum)"
+  else:
+    FINAL_ROUTING = synthesizer.overall_routing
+    Log: "Review Team: routing → {FINAL_ROUTING}"
+
+Step 3: If FINAL_ROUTING != synthesizer.overall_routing (and not the critical override case):
+    Log: "Review Team: routing override — synthesizer suggested {synthesizer.overall_routing}, enforced {FINAL_ROUTING}"
+```
+
+This enforcement applies even if the synthesizer assigned `block_and_escalate` to a critical finding
+in its own `final_routing` — the workflow does the check independently as a safety layer.
+
+Note: block_and_escalate overrides auto_advance mode — user input is always required regardless of
+workflow execution settings.
+
+---
+
+### Part D — Write REVIEW-REPORT.md (ALL routing paths, before acting on route)
+
+Write before acting on FINAL_ROUTING — the finding is logged even if execution halts.
+
+Path: `.planning/phases/${PHASE_ID}/REVIEW-REPORT.md`
+
+Append logic (Read-then-Write):
+1. Attempt to Read `.planning/phases/${PHASE_ID}/REVIEW-REPORT.md`
+2. If file does NOT exist: build content = `# Review Report — Phase ${PHASE_ID}\n\n---\n\n` + plan section
+3. If file EXISTS: build content = existing_content + `\n\n` + plan section (append, do NOT overwrite)
+4. Write the full content back
+
+Plan section format:
+```markdown
+## Plan ${PLAN_NUM} — {ISO timestamp, e.g. 2026-02-26T03:15:00Z}
+
+**Reviewers:** {comma-separated from synthesizer.reviewer_coverage}
+**Findings:** {len(unique_findings)} | **Deduped:** {synthesizer.dedup_count}
+**Action:** {FINAL_ROUTING}
+
+| ID | Reviewer | Severity | Description | Evidence | Routing |
+|----|----------|----------|-------------|----------|---------|
+{one row per unique_finding: | {id} | {reviewer} | {severity} | {description (truncated to 80 chars)} | {evidence (truncated to 60 chars)} | {final_routing} |}
+
+---
+```
+
+If 0 unique_findings (fallback from validation failure used raw findings with no findings, or
+synthesizer returned empty):
+```markdown
+## Plan ${PLAN_NUM} — {ISO timestamp}
+
+**Reviewers:** {comma-separated}
+**Findings:** 0
+**Action:** log_and_continue
+
+No findings — all reviewers returned clean.
+
+---
+```
+
+---
+
+### Part E — Act on FINAL_ROUTING
+
+All four routing destinations:
+
+**block_and_escalate:**
+Present to user using AskUserQuestion (halt — execution does not proceed until user responds):
+
+```
+## REVIEW TEAM: EXECUTION BLOCKED
+
+**Phase:** ${PHASE_ID}
+**Plan:** ${PLAN_NUM}
+
+Critical finding(s) require your decision before execution continues.
+
+### Critical Findings
+
+| ID | Reviewer | Severity | Finding | Evidence |
+|----|----------|----------|---------|----------|
+{rows for unique_findings where severity == "critical"}
+
+---
+
+Findings logged to REVIEW-REPORT.md.
+
+**Options:**
+- "Continue" — acknowledge finding, continue with next plan
+- "Fix first" — stop execution, address finding manually
+- "Rework" — re-execute this plan with the finding as context
+
+Execution will NOT continue until you respond.
+```
+
+Wait for user response. Do NOT call return_status until user decides.
+
+**send_for_rework:**
+Present findings and halt:
+
+```
+## REVIEW TEAM: REWORK REQUIRED
+
+**Phase:** ${PHASE_ID}
+**Plan:** ${PLAN_NUM}
+**Findings requiring rework:** {count of high-severity findings}
+
+{Table of high-severity findings}
+
+Findings logged to REVIEW-REPORT.md.
+Execution halted. Suggested action: address the finding(s) above, then re-execute this plan.
+```
+
+Halt. Do NOT call return_status.
+
+**send_to_debugger:**
+Present findings and halt:
+
+```
+## REVIEW TEAM: DEBUGGER RECOMMENDED
+
+**Phase:** ${PHASE_ID}
+**Plan:** ${PLAN_NUM}
+
+{Table of medium findings with send_to_debugger routing}
+
+Findings logged to REVIEW-REPORT.md.
+Suggested action: run /gsd:debug with the finding context above.
+```
+
+Halt. Do NOT call return_status.
+
+**log_and_continue:**
+```
+Log: "Review Team: {N} finding(s) logged to REVIEW-REPORT.md — continuing execution"
+Proceed to return_status immediately. No halt. No user presentation.
+```
 </step>
 
 <step name="return_status">
