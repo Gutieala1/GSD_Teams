@@ -14,7 +14,7 @@ the next phase builds on it — the order is not arbitrary.
 - [x] **Phase 2: Sanitizer + Artifact Schema** — Zero executor reasoning leaks past the isolation gate
 - [x] **Phase 3: Single Reviewer + Finding Schema** — One reviewer fires, produces structured evidence-backed findings, stays in its lane
 - [x] **Phase 4: Parallel Pipeline + Synthesizer + Routing** — All reviewers run in parallel, synthesizer routes deterministically, REVIEW-REPORT.md populated
-- [ ] **Phase 5: /gsd:new-reviewer + Starter Roles + Docs** — Users can build roles, 3 starters ship, README documents everything
+- [x] **Phase 5: /gsd:new-reviewer + Starter Roles + Docs** — Users can build roles, 3 starters ship, README documents everything
 
 ## Phase Details
 
@@ -102,9 +102,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Fix 3 starter roles: remove "Example role" callouts, generalize Rules Lawyer criterion (both templates/TEAM.md and .planning/TEAM.md)
-- [ ] 05-02-PLAN.md — workflows/new-reviewer.md (7-step guided workflow) + commands/gsd/new-reviewer.md (slash command entry point)
-- [ ] 05-03-PLAN.md — README.md (installation, post-update, TEAM.md format, first-run) + install.sh version check + commands/gsd copy
+- [x] 05-01-PLAN.md — Fix 3 starter roles: remove "Example role" callouts, generalize Rules Lawyer criterion (both templates/TEAM.md and .planning/TEAM.md)
+- [x] 05-02-PLAN.md — workflows/new-reviewer.md (7-step guided workflow) + commands/gsd/new-reviewer.md (slash command entry point)
+- [x] 05-03-PLAN.md — README.md (installation, post-update, TEAM.md format, first-run) + install.sh version check + commands/gsd copy
 
 ## Progress
 
@@ -116,4 +116,4 @@ Plans:
 | 2. Sanitizer + Artifact Schema | 2/2 | Complete | 2026-02-26 |
 | 3. Single Reviewer + Finding Schema | 3/3 | Complete | 2026-02-26 |
 | 4. Parallel Pipeline + Synthesizer + Routing | 3/3 | Complete | 2026-02-25 |
-| 5. /gsd:new-reviewer + Starter Roles + Docs | 0/3 | Not started | - |
+| 5. /gsd:new-reviewer + Starter Roles + Docs | 3/3 | Complete | 2026-02-25 |
