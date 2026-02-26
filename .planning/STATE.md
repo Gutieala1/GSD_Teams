@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Catch compounding AI errors at the plan boundary — before they become the foundation for the next plan.
-**Current focus:** Phase 2 complete — ready for Phase 3 (Single Reviewer + Finding Schema)
+**Current focus:** Phase 3 in progress — 03-01 finding-schema complete, ready for 03-02 gsd-reviewer agent
 
 ## Current Position
 
 Phase: 3 of 5 (Single Reviewer + Finding Schema)
-Plan: 1 of 3 in current phase
-Status: Phase 2 verified and complete — ready to start Phase 3
-Last activity: 2026-02-26 — Completed 02-02 review-team workflow
+Plan: 2 of 3 in current phase
+Status: 03-01 complete — finding JSON schema document created
+Last activity: 2026-02-26 — Completed 03-01 finding schema document
 
-Progress: [██████░░░░] 60%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: ~1.5 min
-- Total execution time: ~9 min
+- Total execution time: ~10 min
 
 **By Phase:**
 
@@ -34,6 +34,7 @@ Progress: [██████░░░░] 60%
 | Phase 01-extension-scaffold-gsd-integration P04 | 2 | 1 task | 4 files |
 | Phase 02-sanitizer-artifact-schema P01 | 2 | 1 task | 1 file |
 | Phase 02-sanitizer-artifact-schema P02 | 2 | 1 task | 1 file |
+| Phase 03-single-reviewer-finding-schema P01 | 1 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,11 @@ Key architectural decisions from project initialization:
 - **02-02**: Sanitizer @-reference uses canonical extension path: @~/.claude/get-shit-done-review-team/agents/gsd-review-sanitizer.md
 - **02-02**: ARTIFACT.md path follows {phase}-{plan}-ARTIFACT.md convention matching SUMMARY.md naming
 - **02-02**: Phase 3/4 steps are documented placeholders with clear '[not yet implemented]' markers
+- [Phase 03-01]: 7-field schema (id, reviewer, domain, severity, evidence, description, suggested_routing) — minimum sufficient set from REVR-02/REVR-06, no SARIF overhead
+- [Phase 03-01]: Severity enum uses exact REVR-05 strings: critical/high/medium/low/info — 5 levels, not the 4-level enum in REVIEW-PIPELINE-DESIGN.md
+- [Phase 03-01]: Evidence field requires character-for-character quote from ARTIFACT.md — paraphrase is explicitly not valid
+- [Phase 03-01]: Tie-breaking rule: when in doubt, go lower — anti-inflation check before finalizing any critical finding
+- [Phase 03-01]: ID prefix derived from first 3-4 uppercase characters of role name: SEC, LAW, PERF for starter roles
 
 ### Pending Todos
 
@@ -84,5 +90,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 02-02-PLAN.md — review-team workflow skeleton (Phase 2 complete)
+Stopped at: Completed 03-01-PLAN.md — finding JSON schema document (Phase 3, Plan 1 of 3)
 Resume file: None
