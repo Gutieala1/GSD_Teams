@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-25)
 
 **Core value:** Catch compounding AI errors at the plan boundary — before they become the foundation for the next plan.
-**Current focus:** Phase 1 — Extension Scaffold + GSD Integration
+**Current focus:** Phase 2 — Sanitizer + Artifact Schema
 
 ## Current Position
 
-Phase: 1 of 5 (Extension Scaffold + GSD Integration)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-02-26 — Completed 01-03 patch-settings.py patcher
+Phase: 2 of 5 (Sanitizer + Artifact Schema)
+Plan: 1 of 2 in current phase
+Status: Phase 1 complete — ready to start Phase 2
+Last activity: 2026-02-26 — Completed 01-04 install.sh installer — Phase 1 complete
 
-Progress: [███░░░░░░░] 30%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~1 min
-- Total execution time: ~3 min
+- Total plans completed: 4
+- Average duration: ~1.75 min
+- Total execution time: ~5 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-extension-scaffold-gsd-integration | 3 | ~3 min | ~1 min |
+| 01-extension-scaffold-gsd-integration | 4 | ~5 min | ~1.25 min |
 | Phase 01-extension-scaffold-gsd-integration P01 | 8 | 2 tasks | 5 files |
 | Phase 01-extension-scaffold-gsd-integration P02 | 8 | 2 tasks | 4 files |
 | Phase 01-extension-scaffold-gsd-integration P03 | 2 | 1 task | 1 file |
+| Phase 01-extension-scaffold-gsd-integration P04 | 2 | 1 task | 4 files |
 
 ## Accumulated Context
 
@@ -54,6 +55,9 @@ Key architectural decisions from project initialization:
 - **01-03**: Touch point 1 anchor covers full closing block (Per Milestone line + closing brackets + ])) to ensure correct insertion before AskUserQuestion closing
 - **01-03**: Two distinct spread variable names — update_config uses existing_config.workflow, save_as_defaults uses existing_workflow (different execution contexts in settings.md)
 - **01-03**: WARN on anchor not found (not ERROR) — allows partial application when settings.md has evolved, informs operator which touch points need attention
+- **01-04**: jq is optional — python3 json module fallback used for config.json update; avoids hard dependency since python3 already required
+- **01-04**: GSD_DIR = $HOME/.claude (parent of get-shit-done/) for clean subpath construction in all references
+- **01-04**: EXT_INSTALL_DIR = $GSD_DIR/get-shit-done-review-team — matches @-reference path in review_team_gate step
 
 ### Pending Todos
 
@@ -61,12 +65,12 @@ None yet.
 
 ### Blockers/Concerns
 
-- **Open**: Does AI merge in `reapply-patches` handle XML `<step>` blocks reliably across GSD version changes? (Test during Phase 1)
+- **Open**: Does AI merge in `reapply-patches` handle XML `<step>` blocks reliably across GSD version changes? (Test during Phase 1 — deferred: reapply-patches workflow is Phase 5)
 - **Open**: Sanitized ARTIFACT.md written to disk vs. passed inline — product decision for Phase 2
 - **Open**: REVIEW-REPORT.md per-phase vs. global — product decision for Phase 4
 
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed 01-03-PLAN.md — patch-settings.py patcher for GSD settings.md Review Team toggle
+Stopped at: Completed 01-04-PLAN.md — install.sh installer, Phase 1 complete
 Resume file: None

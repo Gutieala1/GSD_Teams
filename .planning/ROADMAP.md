@@ -10,7 +10,7 @@ the next phase builds on it — the order is not arbitrary.
 
 ## Phases
 
-- [ ] **Phase 1: Extension Scaffold + GSD Integration** — Install cleanly, toggle appears in settings, pipeline activates/no-ops correctly
+- [x] **Phase 1: Extension Scaffold + GSD Integration** — Install cleanly, toggle appears in settings, pipeline activates/no-ops correctly
 - [ ] **Phase 2: Sanitizer + Artifact Schema** — Zero executor reasoning leaks past the isolation gate
 - [ ] **Phase 3: Single Reviewer + Finding Schema** — One reviewer fires, produces structured evidence-backed findings, stays in its lane
 - [ ] **Phase 4: Parallel Pipeline + Synthesizer + Routing** — All reviewers run in parallel, synthesizer routes deterministically, REVIEW-REPORT.md populated
@@ -31,10 +31,10 @@ the next phase builds on it — the order is not arbitrary.
 **Plans**: 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Extension repo scaffold + templates/TEAM.md starter template (3 example roles)
-- [ ] 01-02-PLAN.md — scripts/patch-execute-plan.py (review_team_gate step, pattern-based insertion)
-- [ ] 01-03-PLAN.md — scripts/patch-settings.py (7th toggle + spread-safe config write, 4 touch points)
-- [ ] 01-04-PLAN.md — install.sh (GSD detection, file copy, patch invocation, TEAM.md guard, config update)
+- [x] 01-01-PLAN.md — Extension repo scaffold + templates/TEAM.md starter template (3 example roles)
+- [x] 01-02-PLAN.md — scripts/patch-execute-plan.py (review_team_gate step, pattern-based insertion)
+- [x] 01-03-PLAN.md — scripts/patch-settings.py (7th toggle + spread-safe config write, 4 touch points)
+- [x] 01-04-PLAN.md — install.sh (GSD detection, file copy, patch invocation, TEAM.md guard, config update)
 
 ### Phase 2: Sanitizer + Artifact Schema
 **Goal**: After each plan executes with review_team enabled and a TEAM.md present, a sanitized artifact is written to `{phase-dir}/{phase}-{plan}-ARTIFACT.md`. The artifact contains zero executor reasoning — only observable facts about what was built.
@@ -112,7 +112,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Extension Scaffold + GSD Integration | 0/4 | Not started | - |
+| 1. Extension Scaffold + GSD Integration | 4/4 | Complete | 2026-02-26 |
 | 2. Sanitizer + Artifact Schema | 0/2 | Not started | - |
 | 3. Single Reviewer + Finding Schema | 0/3 | Not started | - |
 | 4. Parallel Pipeline + Synthesizer + Routing | 0/3 | Not started | - |
