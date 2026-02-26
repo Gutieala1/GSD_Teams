@@ -7,9 +7,9 @@ The workflow receives three inputs from the review_team_gate step:
 - PHASE_ID: phase identifier (e.g., "02-sanitizer-artifact-schema")
 - PLAN_NUM: plan number (e.g., "02")
 
-**Phase 2 implements:** TEAM.md validation and sanitizer spawning (Steps 1 and 2).
-**Phase 3 adds:** Reviewer agent spawning in parallel (Step 3).
-**Phase 4 adds:** Synthesis and routing (Step 4).
+**Phase 2 implemented:** TEAM.md validation and sanitizer spawning (Steps 1 and 2).
+**Phase 3 implements:** Single reviewer spawning and JSON findings collection (Step 3).
+**Phase 4 adds:** Parallel reviewer spawning, synthesis, and routing (Steps 3 expanded + Step 4).
 </purpose>
 
 <inputs>
@@ -146,17 +146,72 @@ After the sanitizer returns, verify ARTIFACT.md was written to disk:
 </step>
 
 <step name="spawn_reviewers">
-## Step 3: Spawn Reviewer Agents
+## Step 3: Spawn Reviewer (Phase 3 — Single Reviewer)
 
-[Phase 3 -- not yet implemented]
+Phase 3 implements this step for exactly ONE reviewer — the first valid role from TEAM.md.
+Phase 4 will expand to parallel spawning of all roles.
 
-This step will:
-1. Read each valid role from TEAM.md (using role names from validate_team step)
-2. Spawn reviewer agents in parallel via Task() -- one per role
-3. Each reviewer receives: ARTIFACT.md path + their role definition
-4. Collect all reviewer returns (structured findings)
+### Select First Valid Role
 
-See ROADMAP.md Phase 3 for design.
+Use the valid roles list from the validate_team step. Take the first role:
+```
+first_role_name = roles_list[0]
+```
+
+### Extract Role Definition Text
+
+Read `.planning/TEAM.md` using the Read tool. Extract the full text of the section for `first_role_name`:
+
+1. Find the line matching `## Role: {first_role_name}` (case-insensitive match on the name from the YAML `name:` field)
+2. Extract ALL text from that `## Role:` header line to the NEXT `## Role:` header line (exclusive), or to end-of-file if no next role exists
+3. This entire extracted text is the `role_definition_text` to inject
+
+Example: For role name `security-auditor`, find `## Role: Security Auditor` (or equivalent), extract everything until `## Role: Rules Lawyer` begins.
+
+The `role_definition_text` must include the full role section: YAML code block, focus description, review checklist, severity thresholds, and routing hints — everything written for that role.
+
+### Spawn Reviewer
+
+```
+Task(
+  subagent_type="gsd-reviewer",
+  prompt="
+    <objective>
+    Review the sanitized artifact against your assigned role criteria.
+    Return structured findings as JSON.
+    </objective>
+
+    <inputs>
+    artifact_path: ${ARTIFACT_PATH}
+    phase: ${PHASE_ID}
+    plan: ${PLAN_NUM}
+    </inputs>
+
+    <role_definition>
+    ${role_definition_text}
+    </role_definition>
+
+    <execution_context>
+    @~/.claude/get-shit-done-review-team/agents/gsd-reviewer.md
+    </execution_context>
+  "
+)
+```
+
+Note: `${ARTIFACT_PATH}` is the value computed in the sanitize step. Do not recompute it — reuse the same path.
+
+### Collect and Log JSON Return
+
+After the reviewer returns:
+
+1. Parse the reviewer's return as JSON to extract the `findings` array
+2. Log: `Review Team: Reviewer {first_role_name}: {N} finding(s)`
+3. If the findings array is empty: log `Review Team: Reviewer {first_role_name}: 0 findings (no issues in domain)` and continue — this is valid, not an error
+4. If findings are present: log each finding's id, severity, and description for audit:
+   `  [{id}] [{severity}] {description}`
+5. Store the full findings JSON for the return_status block
+
+Phase 3 stops here — Phase 4 adds synthesis and deterministic routing.
 </step>
 
 <step name="synthesize">
@@ -176,20 +231,27 @@ See ROADMAP.md Phase 4 for design.
 <step name="return_status">
 ## Step 5: Return Pipeline Status
 
-After the sanitize step completes (Phase 2 endpoint), return:
+After the spawn_reviewers step completes (Phase 3 endpoint), return:
 
 ```markdown
-## REVIEW PIPELINE: SANITIZE COMPLETE
+## REVIEW PIPELINE: REVIEWER COMPLETE
 
 **Phase:** ${PHASE_ID}
 **Plan:** ${PLAN_NUM}
-**Roles found:** {N} ({role names})
+**Roles found:** {N} ({comma-separated role names})
 **Artifact:** ${ARTIFACT_PATH}
+**Reviewer fired:** {first_role_name}
+**Findings:** {finding count} finding(s)
 
-[Phase 3/4: Reviewer spawning and synthesis not yet implemented]
-[Pipeline stops here in Phase 2 -- review-team.md will be extended in later phases]
+{If findings exist, list each:}
+| ID | Severity | Description |
+|----|----------|-------------|
+| {id} | {severity} | {description} |
+
+{If 0 findings:}
+No findings in {first_role_name} domain for this plan.
+
+[Phase 4: Parallel multi-reviewer spawning, synthesis, and routing not yet implemented]
+[Pipeline stops here in Phase 3 -- review-team.md will be extended in Phase 4]
 ```
-
-When Phase 3 and Phase 4 are implemented, this return format will be replaced with the full
-synthesis result including routing decision and REVIEW-REPORT.md path.
 </step>
