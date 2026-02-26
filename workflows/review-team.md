@@ -272,27 +272,33 @@ See ROADMAP.md Phase 4 for design.
 <step name="return_status">
 ## Step 5: Return Pipeline Status
 
-After the spawn_reviewers step completes (Phase 3 endpoint), return:
+This step is reached only after the user has made a decision in block_and_escalate, or after
+routing is log_and_continue. For send_for_rework and send_to_debugger, execution halts in the
+synthesize step before reaching return_status.
+
+Return the following status block:
 
 ```markdown
-## REVIEW PIPELINE: REVIEWER COMPLETE
+## REVIEW PIPELINE: PIPELINE COMPLETE
 
 **Phase:** ${PHASE_ID}
 **Plan:** ${PLAN_NUM}
-**Roles found:** {N} ({comma-separated role names})
+**Reviewers fired:** {N} ({comma-separated role names})
 **Artifact:** ${ARTIFACT_PATH}
-**Reviewer fired:** {first_role_name}
-**Findings:** {finding count} finding(s)
+**Findings (pre-synthesis):** {total finding count across all reviewers}
+**Final routing:** {FINAL_ROUTING}
+**REVIEW-REPORT.md:** .planning/phases/${PHASE_ID}/REVIEW-REPORT.md
 
-{If findings exist, list each:}
-| ID | Severity | Description |
-|----|----------|-------------|
-| {id} | {severity} | {description} |
+{If FINAL_ROUTING is log_and_continue:}
+{N} finding(s) logged. Execution continues.
 
-{If 0 findings:}
-No findings in {first_role_name} domain for this plan.
+{If FINAL_ROUTING is block_and_escalate:}
+Execution halted — user decision required. See findings above.
 
-[Phase 4: Parallel multi-reviewer spawning, synthesis, and routing not yet implemented]
-[Pipeline stops here in Phase 3 -- review-team.md will be extended in Phase 4]
+{If FINAL_ROUTING is send_for_rework:}
+Execution halted — rework required. Address findings and re-execute this plan.
+
+{If FINAL_ROUTING is send_to_debugger:}
+Execution halted — debugger recommended. Run /gsd:debug with finding context.
 ```
 </step>
