@@ -49,8 +49,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: `gsd-review-sanitizer.md` agent (6-part GSD structure, strip/preserve schema, DO NOT guards)
-- [ ] 02-02: `review-team.md` workflow skeleton — TEAM.md validation + sanitize step
+- [ ] 02-01-PLAN.md — gsd-review-sanitizer.md agent (6-part GSD structure, strip/preserve schema, completeness checks, DO NOT guards)
+- [ ] 02-02-PLAN.md — review-team.md workflow skeleton (TEAM.md validation + sanitizer Task() spawning + Phase 3/4 placeholders)
 
 ### Phase 3: Single Reviewer + Finding Schema
 **Goal**: One reviewer role from TEAM.md fires successfully. It receives only the sanitized artifact and its own role definition. It produces at least one finding with a direct quote as evidence, assigns severity using the rubric, and stays strictly within its declared domain.
