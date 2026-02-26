@@ -58,6 +58,31 @@ else
 fi
 
 # ------------------------------------------------------------------------------
+# Section 2.5: GSD version compatibility check
+# ------------------------------------------------------------------------------
+GSD_MIN_VERSION="1.19.0"
+GSD_MAX_VERSION="1.99.99"
+
+GSD_VERSION=$(cat "$GSD_DIR/get-shit-done/VERSION" 2>/dev/null || echo "unknown")
+
+if [ "$GSD_VERSION" = "unknown" ]; then
+  echo "  [WARN] Could not read GSD VERSION file — skipping compatibility check"
+else
+  LOWEST=$(printf '%s\n' "$GSD_MIN_VERSION" "$GSD_VERSION" | sort -V | head -1)
+  HIGHEST=$(printf '%s\n' "$GSD_VERSION" "$GSD_MAX_VERSION" | sort -V | tail -1)
+
+  if [ "$LOWEST" = "$GSD_MIN_VERSION" ] && [ "$HIGHEST" = "$GSD_MAX_VERSION" ]; then
+    echo "  [OK] GSD version: $GSD_VERSION (compatible range: $GSD_MIN_VERSION – $GSD_MAX_VERSION)"
+  else
+    echo ""
+    echo "  [WARN] GSD version $GSD_VERSION is outside the tested range ($GSD_MIN_VERSION – $GSD_MAX_VERSION)"
+    echo "         The extension may still work, but has not been tested with this version."
+    echo "         Proceeding with installation..."
+    echo ""
+  fi
+fi
+
+# ------------------------------------------------------------------------------
 # Section 3: Project root detection
 # ------------------------------------------------------------------------------
 if [ ! -d ".planning" ]; then
@@ -114,6 +139,15 @@ if ls "$EXT_DIR/templates/"*.md >/dev/null 2>&1; then
   echo "  [OK] templates/*.md copied"
 else
   echo "  [SKIP] No templates/*.md files found"
+fi
+
+# Copy commands/gsd/*.md if any exist
+if ls "$EXT_DIR/commands/gsd/"*.md >/dev/null 2>&1; then
+  mkdir -p "$GSD_DIR/commands/gsd"
+  cp "$EXT_DIR/commands/gsd/"*.md "$GSD_DIR/commands/gsd/"
+  echo "  [OK] commands/gsd/*.md copied"
+else
+  echo "  [SKIP] No commands/gsd/*.md files found"
 fi
 
 # ------------------------------------------------------------------------------
@@ -200,8 +234,9 @@ echo "  Patches applied:"
 echo "    - execute-plan.md (review_team_gate step)"
 echo "    - settings.md (Review Team toggle)"
 echo ""
-echo "  IMPORTANT: After running /gsd:update, you must run"
-echo "  /gsd:reapply-patches to restore the patches above."
+echo "  IMPORTANT: After running /gsd:update, re-run 'bash install.sh'"
+echo "  to restore patches and the /gsd:new-reviewer command."
+echo "  See README.md for the full post-update procedure."
 echo ""
 echo "  Next steps:"
 echo "    1. Run /gsd:settings to enable Review Team"
