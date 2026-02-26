@@ -52,8 +52,8 @@ Key architectural decisions from project initialization:
 - **01-02**: review_team_gate reads CONFIG_CONTENT already in scope — no re-read, no gsd-tools.cjs changes needed
 - **01-02**: Three-branch gate logic: disabled (silent no-op) | TEAM.md missing (log+continue) | TEAM.md present (load @workflow)
 - **01-03**: Touch point 1 anchor covers full closing block (Per Milestone line + closing brackets + ])) to ensure correct insertion before AskUserQuestion closing
-- [01-03]: Two distinct spread variable names — update_config uses existing_config.workflow, save_as_defaults uses existing_workflow (different execution contexts in settings.md)
-- [01-03]: WARN on anchor not found (not ERROR) — allows partial application when settings.md has evolved, informs operator which touch points need attention
+- **01-03**: Two distinct spread variable names — update_config uses existing_config.workflow, save_as_defaults uses existing_workflow (different execution contexts in settings.md)
+- **01-03**: WARN on anchor not found (not ERROR) — allows partial application when settings.md has evolved, informs operator which touch points need attention
 
 ### Pending Todos
 
