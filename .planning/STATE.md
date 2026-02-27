@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 ## Current Position
 
-Phase: 10-advisory-output-to-planner — Plan 02 complete (2/2)
-Next phase: 11-agent-creation-new-agent
-Status: Phase 10 complete — advisory output to planner fully wired
-Last activity: 2026-02-27 — Phase 10 plan 02 complete (dispatcher output_type split routing)
+Phase: 11-agent-creation-new-agent — Plan 02 complete (2/2)
+Next phase: (phase 11 complete — next phase TBD)
+Status: Phase 11 complete — /gsd:new-agent command wired, team-studio add_agent routing live
+Last activity: 2026-02-27 — Phase 11 plan 02 complete (/gsd:new-agent command + team-studio routing)
 
-Progress: [█████░░░░░] v2.0 — phase 10 complete (5 of 7)
+Progress: [██████░░░░] v2.0 — phase 11 complete (6 of 7)
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [█████░░░░░] v2.0 — phase 10 complete (5 of 7)
 | Phase 10-advisory-output-to-planner P01 | ~2min | 2 tasks | 2 files |
 | Phase 10-advisory-output-to-planner P02 | 2min | 2 tasks | 1 file |
 | Phase 10-advisory-output-to-planner P01 | 4 | 2 tasks | 3 files |
+| Phase 11-agent-creation-new-agent P11-02 | 1min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -174,6 +175,9 @@ Key architectural decisions from project initialization:
 - [Phase 10-02]: findings agents at pre-plan trigger: log descriptive warning and skip — no SUMMARY.md exists at pre-plan time, review pipeline cannot run
 - [Phase 10-01]: Net-zero step count: adding step 8 and removing step 13 cancel out — steps 14/15 unchanged; Anchor A slices gate body without renaming step 14
 - [Phase 10-01]: AGENT_NOTES idempotency string (not pre_plan_agent_gate) used in Phase 10 patch — pre_plan_agent_gate already present from Phase 9, AGENT_NOTES unique to Phase 10
+- [Phase 11-agent-creation-new-agent]: /gsd:new-agent command file follows identical structure to commands/gsd/new-reviewer.md — YAML frontmatter + execution_context installed path + process gate preservation
+- [Phase 11-agent-creation-new-agent]: install.sh Section 5 glob (commands/gsd/*.md) picks up new-agent.md automatically — no install.sh modification required
+- [Phase 11-agent-creation-new-agent]: /gsd:new-agent is primary route in add_agent for all agent types; /gsd:new-reviewer remains as shortcut for post-plan advisory reviewers only
 
 ### Pending Todos
 
@@ -188,5 +192,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 10-02-PLAN.md — agent-dispatcher.md route_by_mode output_type split routing + SUMMARY.md generated (Phase 10 complete)
+Stopped at: Completed 11-02-PLAN.md — /gsd:new-agent command file (commands/gsd/new-agent.md) + team-studio.md add_agent routing live (Phase 11 complete)
 Resume file: None
