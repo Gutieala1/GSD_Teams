@@ -183,7 +183,11 @@ Plans:
   1. `/gsd:team` displays a formatted table of all agents in TEAM.md with name, mode, triggers, output_type, and enabled status — disabled agents appear in the table but are visually distinguished
   2. From the roster, a user can disable an agent and confirm that subsequent dispatcher calls with a matching trigger context do not invoke the disabled agent
   3. From the roster, a user can invoke an agent on-demand against a specified artifact — result is displayed inline and logged to AGENT-REPORT.md
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Dispatcher enabled filter patch (agent-dispatcher.md + templates/TEAM.md + ARCHITECTURE.md normalizeRole spec)
+- [ ] 08-02-PLAN.md — /gsd:team command + team-studio.md roster workflow (show, toggle, remove, on-demand invoke, history, add)
 
 ### Phase 9: Lifecycle Trigger Hooks
 **Goal**: Three GSD core workflows are patched to call agent-dispatcher.md at the correct trigger points: plan-phase.md gains `pre_plan_agent_gate` (fires before plan creation, always fail-open); execute-phase.md gains `post_phase_agent_gate` (fires after all plans in a phase complete); the on-demand invoke path through /gsd:team is live. All patches are idempotent and safe on systems already patched with v1.0.
@@ -234,7 +238,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 6. TEAM.md v2 Schema + Config Foundation | 0/2 | Not started | - |
 | 7. Agent Dispatcher | 0/2 | Not started | - |
-| 8. Team Roster /gsd:team | 0/TBD | Not started | - |
+| 8. Team Roster /gsd:team | 0/2 | Not started | - |
 | 9. Lifecycle Trigger Hooks | 0/TBD | Not started | - |
 | 10. Advisory Output to Planner | 0/TBD | Not started | - |
 | 11. Agent Creation /gsd:new-agent | 0/TBD | Not started | - |
