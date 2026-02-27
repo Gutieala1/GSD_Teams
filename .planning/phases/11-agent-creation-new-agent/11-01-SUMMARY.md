@@ -124,3 +124,10 @@ None - no external service configuration required.
 ---
 *Phase: 11-agent-creation-new-agent*
 *Completed: 2026-02-27*
+
+## Self-Check: PASSED
+
+- FOUND: `workflows/new-agent.md` (648 lines, 9 steps)
+- FOUND: `.planning/phases/11-agent-creation-new-agent/11-01-SUMMARY.md`
+- FOUND: commit `5378631` (feat: create workflows/new-agent.md)
+- FOUND: commit `fa47e69` (docs: complete new-agent workflow plan)

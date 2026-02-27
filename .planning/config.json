@@ -5,7 +5,8 @@
     "plan_check": true,
     "verifier": true,
     "auto_advance": false,
-    "review_team": true
+    "review_team": true,
+    "agent_studio": false
   },
   "git": {
     "branching_strategy": "none"
