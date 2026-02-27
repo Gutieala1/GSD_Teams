@@ -4,9 +4,10 @@ downstream execution paths. Reads .planning/TEAM.md, applies the normalizeRole a
 to all roles (version-independent normalization), filters by the current trigger context,
 then routes to the appropriate execution path.
 
-For advisory post-plan roles: delegates unchanged to the review-team.md pipeline, preserving
-identical REVIEW-REPORT.md output and all four routing paths (block_and_escalate,
-send_for_rework, send_to_debugger, log_and_continue).
+For advisory roles: routes output_type:notes to direct return (<agent_notes> block);
+routes output_type:findings to review-team.md (post-plan only). Preserving identical
+REVIEW-REPORT.md output and all four routing paths (block_and_escalate, send_for_rework,
+send_to_debugger, log_and_continue) for the findings path.
 
 For no-match trigger: exits immediately with zero Task() spawns (DISP-02).
 
@@ -18,7 +19,8 @@ Phase 9 implements the autonomous execution path.
 
 Source path:    D:/GSDteams/workflows/agent-dispatcher.md
 Installed path: ~/.claude/get-shit-done-review-team/workflows/agent-dispatcher.md
-Calling point:  review_team_gate step in execute-plan.md (Phase 7: post-plan trigger only)
+Calling point:  pre_plan_agent_gate step in plan-phase.md (pre-plan trigger) and
+                review_team_gate step in execute-plan.md (post-plan trigger)
 </purpose>
 
 <inputs>
@@ -205,31 +207,101 @@ Both lists are passed to the route_by_mode step.
 </step>
 
 <step name="route_by_mode">
-Route matched roles to their execution paths. Advisory roles go to the review pipeline.
-Autonomous roles are logged as stubs (Phase 9).
+Route matched roles to their execution paths by output_type. Notes agents return structured
+markdown directly. Findings agents route to the review pipeline (post-plan only).
+Autonomous roles are logged as stubs.
 
-**Handle advisory roles**
+**Split advisory roles by output_type**
 
-If `advisory_roles` is non-empty:
+```
+advisory_notes_roles    = [r for r in advisory_roles if r.output_type == "notes"]
+advisory_findings_roles = [r for r in advisory_roles if r.output_type != "notes"]
+```
 
-  Call the review pipeline:
+**Handle advisory findings roles (output_type: findings or default)**
 
+If `advisory_findings_roles` is non-empty:
+
+  If `trigger_type` == "post-plan":
+    Call the review pipeline (unchanged behavior):
+
+    ```
+    @~/.claude/get-shit-done-review-team/workflows/review-team.md
+    ```
+
+    Pass these inputs:
+    - SUMMARY_PATH = summary_path input
+    - PHASE_ID     = phase_id input
+    - PLAN_NUM     = plan_num input
+
+    IMPORTANT: Do NOT pass a filtered role list. review-team.md reads .planning/TEAM.md
+    itself and performs its own role validation. The dispatcher does not pre-filter.
+
+  If `trigger_type` != "post-plan" (e.g. "pre-plan"):
+    Log: `Agent Dispatcher: {N} advisory findings agent(s) ignored for trigger '{trigger_type}' — output_type: findings requires post-plan trigger. Use output_type: notes for pre-plan agents.`
+    Do NOT call review-team.md. Do NOT spawn any Task(). Continue to notes handling below.
+
+**Handle advisory notes roles (output_type: notes)**
+
+If `advisory_notes_roles` is non-empty:
+
+  Initialize: `collected_notes = []`
+
+  For each role in advisory_notes_roles (spawn ALL in a single message — true parallelism,
+  same pattern as spawn_reviewers in review-team.md):
+
+    Spawn a Task() with this prompt:
+    ```
+    You are {role.name}.
+
+    {role definition block from TEAM.md — the full ## Role: {slug} section}
+
+    Your task: Review the current phase context and return structured advisory notes.
+    These notes will be passed to the GSD planner as input before planning begins.
+    The planner may incorporate or explicitly disregard your notes — always provide notes.
+
+    Phase context:
+    - Phase ID: {phase_id}
+    - Phase goal and requirements: read from .planning/ROADMAP.md and .planning/phases/{phase_id}/
+    - Available context files: .planning/STATE.md, .planning/ROADMAP.md
+
+    Return structured markdown with:
+    ## Advisory Notes: {brief topic}
+
+    **Key observation:** {finding relevant to the plan}
+
+    **Recommendation:** {specific, actionable suggestion for the planner}
+
+    **Confidence:** HIGH | MEDIUM | LOW
+
+    ---
+
+    Focus on your declared domain: {role.focus}
+    Do not address areas outside your domain.
+    ```
+
+  Collect all Task() return values. For each: append the role name and the returned markdown
+  to `collected_notes`.
+
+  Build the `<agent_notes>` block:
   ```
-  @~/.claude/get-shit-done-review-team/workflows/review-team.md
+  AGENT_NOTES_BLOCK = "<agent_notes>\n"
+  AGENT_NOTES_BLOCK += "Advisory agents ran before this plan was created. These notes are INPUT — "
+  AGENT_NOTES_BLOCK += "incorporate them where relevant, or explicitly disregard with a brief note. "
+  AGENT_NOTES_BLOCK += "Always produce a plan.\n\n"
+  for (role_name, notes_markdown) in collected_notes:
+    AGENT_NOTES_BLOCK += f"## {role_name}\n\n{notes_markdown}\n\n"
+  AGENT_NOTES_BLOCK += "</agent_notes>"
   ```
 
-  Pass these inputs (same contract as the pre-dispatcher review_team_gate call):
-  - SUMMARY_PATH = summary_path input
-  - PHASE_ID     = phase_id input
-  - PLAN_NUM     = plan_num input
+  Return `AGENT_NOTES_BLOCK` as part of the dispatcher output text. The calling gate step
+  (pre_plan_agent_gate in plan-phase.md) extracts this block from the dispatcher's return
+  value by looking for the `<agent_notes>` ... `</agent_notes>` span.
 
-  IMPORTANT: Do NOT pass a filtered role list or a `roles:` parameter to review-team.md.
-  review-team.md reads .planning/TEAM.md itself in its validate_team step and performs its
-  own role validation. The dispatcher does not pre-filter or replicate review-team.md logic.
+  Log: `Agent Dispatcher: {N} advisory notes agent(s) fired. <agent_notes> block returned.`
 
-  The dispatcher is an adapter/router. The review pipeline (sanitize → spawn_reviewers →
-  synthesize → return_status) is unchanged. All four routing paths remain reachable:
-  block_and_escalate, send_for_rework, send_to_debugger, log_and_continue.
+If `advisory_notes_roles` is empty: do not include any `<agent_notes>` block in output.
+Log only if notes agents were expected but none matched (e.g. zero notes roles for pre-plan).
 
 **Handle autonomous roles (stub — Phase 9)**
 
@@ -239,10 +311,10 @@ If `autonomous_roles` is non-empty:
     Log: `Agent Dispatcher: autonomous agent '{role.name}' — autonomous execution not yet implemented (Phase 9). Skipping.`
 
   Do NOT spawn any Task(). Do NOT crash. Do NOT call any pipeline.
-  This is a safe, informative no-op until Phase 9 implements the autonomous execution path.
 
 **Return**
 
-After handling both role groups (or either alone), the dispatcher returns normally to the
-calling review_team_gate step. Flow continues to the offer_next step in execute-plan.md.
+After handling all role groups, the dispatcher returns normally to the calling gate step.
+For pre-plan calls with notes agents: the return text includes the `<agent_notes>` block.
+For post-plan calls: flow returns to offer_next in execute-plan.md (unchanged).
 </step>
