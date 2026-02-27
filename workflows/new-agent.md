@@ -3,7 +3,8 @@ Guides the user through creating a new agent role and writes it to `.planning/TE
 If the agent is autonomous, also creates `agents/gsd-agent-{slug}.md` with a structured prompt template.
 
 Steps: check_team_md → gather_purpose → gather_mode → gather_trigger → gather_output_type
-       → gather_advisory_details (advisory only) → gather_scope (autonomous only)
+       → gather_advisory_details (advisory only) → gather_patterns (advisory only)
+       → gather_calibration (advisory only) → gather_scope (autonomous only)
        → decision_gate → write_agent
 
 Called by: `commands/gsd/new-agent.md` via the `/gsd:new-agent` slash command.
@@ -267,8 +268,95 @@ If `output_type == "notes"`: skip severity and routing questions. Notes agents d
 Store: `severity_critical` = "N/A — notes agent does not produce findings", `severity_major` = "N/A", `severity_minor` = "N/A", `routing_critical` = "N/A", `routing_major` = "N/A", `routing_minor` = "N/A"
 </step>
 
+<step name="gather_patterns">
+## Step 7a: Specific Patterns (advisory mode only)
+
+**Skip this step entirely if mode == "autonomous". Proceed directly to gather_scope.**
+
+The criteria list from gather_advisory_details is a good start but too vague to make the agent
+reliable. This step forces specificity — concrete patterns the agent can match against, not
+general categories.
+
+Say to the user:
+"Good. Now let me ask for 3 specific patterns so the agent knows exactly what to look for —
+not just categories, but concrete signals."
+
+Then ask:
+
+```
+AskUserQuestion([
+  {
+    question: "Name up to 3 specific patterns this agent should flag, each with a concrete example.",
+    header: "Patterns",
+    multiSelect: false,
+    options: [
+      { label: "I'll describe them",    description: "Type: 'bare except clause — e.g. except: pass silently swallows errors'" },
+      { label: "Generate from criteria", description: "Derive 3 patterns from the criteria I already gave" },
+      { label: "Skip patterns",          description: "Use only the criteria list (less precise)" }
+    ]
+  }
+])
+```
+
+If "I'll describe them": accept free-text. Parse into a list of up to 3 items in the format:
+`{pattern name} — {concrete example or description}`.
+
+If "Generate from criteria": derive 3 specific, matchable patterns from `criteria_list`. Present
+them to the user for confirmation before accepting.
+
+If "Skip patterns": set `patterns_list` = [] and proceed.
+
+Store: `patterns_list` — a list of strings in the format:
+`- {pattern name}: {concrete example or description}`
+
+Also ask: "What should this agent explicitly NOT flag? (What's out of scope?)"
+Accept a short free-text answer.
+Store: `scope_exclude` — one sentence describing what's excluded. If the user says "nothing"
+or skips, store `scope_exclude` = null.
+</step>
+
+<step name="gather_calibration">
+## Step 7b: Calibration Examples (advisory mode only, output_type: findings only)
+
+**Skip this step entirely if mode == "autonomous". Proceed directly to gather_scope.**
+**Skip this step if output_type == "notes". Notes agents have no severity tiers.**
+
+Say to the user:
+"One more thing — a concrete example at each severity level helps the agent calibrate correctly."
+
+Ask:
+
+```
+AskUserQuestion([
+  {
+    question: "Give a concrete example finding at each severity level for this agent.",
+    header: "Calibration",
+    multiSelect: false,
+    options: [
+      { label: "I'll provide examples",  description: "Type: 'critical: function deletes user data without auth check'" },
+      { label: "Generate from thresholds", description: "Derive examples from the severity thresholds I defined" },
+      { label: "Skip calibration",        description: "Use only the severity definitions (less precise)" }
+    ]
+  }
+])
+```
+
+If "I'll provide examples": accept free-text. Parse into three items:
+`calibration_critical`, `calibration_major`, `calibration_minor`.
+
+If "Generate from thresholds": derive one concrete example per tier from `severity_critical`,
+`severity_major`, `severity_minor`. Present them for confirmation.
+
+If "Skip calibration": set all three to null and proceed.
+
+Store:
+- `calibration_critical` — one concrete example of a critical finding for this agent
+- `calibration_major`    — one concrete example of a major finding
+- `calibration_minor`    — one concrete example of a minor finding
+</step>
+
 <step name="gather_scope">
-## Step 7: Scope (autonomous mode only)
+## Step 8: Scope (autonomous mode only)
 
 **Skip this step entirely if mode == "advisory". Proceed directly to decision_gate.**
 
@@ -397,16 +485,29 @@ focus: {purpose_sentence}
 mode: advisory
 trigger: {trigger}
 output_type: {output_type}
+{if scope_exclude is not null: scope_exclude: "{scope_exclude}"}
 enabled: true
 ```
 
 **What this role reviews:**
 {criteria_list}
 
+{if patterns_list is non-empty:
+**Patterns to flag:**
+{patterns_list}
+}
+
 **Severity thresholds:**
 - `critical`: {severity_critical}
 - `major`: {severity_major}
 - `minor`: {severity_minor}
+
+{if calibration_critical is not null:
+**Calibration examples:**
+- `critical`: {calibration_critical}
+- `major`: {calibration_major}
+- `minor`: {calibration_minor}
+}
 
 **Routing hints:**
 - Critical findings: `{routing_critical}`
@@ -562,6 +663,7 @@ focus: {purpose_sentence}
 mode: {mode}
 trigger: {trigger}
 output_type: {output_type}
+{if mode == "advisory" and scope_exclude is not null: scope_exclude: "{scope_exclude}"}
 {if mode == "autonomous": commit: {commit}}
 {if mode == "autonomous" and commit == true: commit_message: "{commit_message}"}
 enabled: true
@@ -578,6 +680,11 @@ scope:
 **What this role {if advisory: reviews}{if autonomous: produces}:**
 {criteria_list if advisory, or purpose_sentence if autonomous}
 
+{if advisory and patterns_list is non-empty:
+**Patterns to flag:**
+{patterns_list}
+}
+
 **Severity thresholds:**
 {if advisory: - `critical`: {severity_critical}
 - `major`: {severity_major}
@@ -585,6 +692,13 @@ scope:
 {if autonomous: - `critical`: N/A — autonomous agent does not produce findings
 - `major`: N/A
 - `minor`: N/A}
+
+{if advisory and calibration_critical is not null:
+**Calibration examples:**
+- `critical`: {calibration_critical}
+- `major`: {calibration_major}
+- `minor`: {calibration_minor}
+}
 
 **Routing hints:**
 {if advisory: - Critical findings: `{routing_critical}`

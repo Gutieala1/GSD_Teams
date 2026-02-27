@@ -247,37 +247,99 @@ If `advisory_notes_roles` is non-empty:
 
   Initialize: `collected_notes = []`
 
+  Before spawning, read the phase context files (use the Read tool):
+  - `.planning/ROADMAP.md` — extract the section for {phase_id}
+  - `.planning/STATE.md` — current project state
+  - Any files under `.planning/phases/{phase_id}/` that exist (research, prior summaries)
+
+  Store the combined content as `phase_context_content`.
+
+  Also read the full `## Role: {role.slug}` section from `.planning/TEAM.md` as `role_block`.
+
   For each role in advisory_notes_roles (spawn ALL in a single message — true parallelism,
   same pattern as spawn_reviewers in review-team.md):
 
     Spawn a Task() with this prompt:
     ```
-    You are {role.name}.
+    <objective>
+    You are {role.name}, a pre-plan advisory agent.
 
-    {role definition block from TEAM.md — the full ## Role: {slug} section}
+    Your job: Review the phase context below and return structured advisory notes
+    that will be injected into the planner's prompt before planning begins.
 
-    Your task: Review the current phase context and return structured advisory notes.
-    These notes will be passed to the GSD planner as input before planning begins.
-    The planner may incorporate or explicitly disregard your notes — always provide notes.
+    Your declared domain: {role.focus}
+    </objective>
 
-    Phase context:
-    - Phase ID: {phase_id}
-    - Phase goal and requirements: read from .planning/ROADMAP.md and .planning/phases/{phase_id}/
-    - Available context files: .planning/STATE.md, .planning/ROADMAP.md
+    <role_definition>
+    {role_block — the full ## Role: {slug} section from TEAM.md}
+    </role_definition>
 
-    Return structured markdown with:
-    ## Advisory Notes: {brief topic}
+    <phase_context>
+    {phase_context_content — ROADMAP phase entry + STATE.md + any phase research files}
+    </phase_context>
 
-    **Key observation:** {finding relevant to the plan}
+    <methodology>
+    Step 1 — Read the phase context above carefully. Understand the goal, requirements,
+             and current state before forming any observations.
 
-    **Recommendation:** {specific, actionable suggestion for the planner}
+    Step 2 — For each item in your "What this role reviews" list (and any "Patterns to flag"
+             if present), check whether the phase context contains relevant evidence.
 
+    Step 3 — For each observation you want to raise, find the specific text in the
+             phase context that grounds it. If you cannot find a direct quote or reference,
+             do not raise the observation — speculation is not permitted.
+
+    Step 4 — Assign a confidence level:
+             HIGH   = direct evidence in the phase context
+             MEDIUM = strong inference from multiple context signals
+             LOW    = plausible concern with limited supporting evidence
+
+    Step 5 — Apply your scope constraint: suppress any observation outside your declared
+             domain ({role.focus}). Do not mention out-of-scope concerns even if you notice them.
+
+    Step 6 — Format your output exactly as specified below.
+    </methodology>
+
+    <output_format>
+    Return ONLY the following markdown structure. No preamble, no summary after.
+
+    ## Advisory Notes: {role.name}
+
+    ### Observation 1
+    **Finding:** [one sentence — what you observed]
+    **Evidence:** [direct quote or specific reference from the phase context above]
+    **Recommendation:** [one actionable suggestion for the planner]
     **Confidence:** HIGH | MEDIUM | LOW
 
-    ---
+    ### Observation 2
+    [repeat pattern — maximum 5 observations total]
 
-    Focus on your declared domain: {role.focus}
-    Do not address areas outside your domain.
+    ---
+    **Domain:** {role.focus}
+    **Scope:** Pre-plan advisory — these notes inform the planner, not the executor.
+    </output_format>
+
+    <critical_rules>
+    1. Every observation MUST have an Evidence field with a direct quote or specific reference
+       to the phase context above. Observations without evidence must be omitted.
+    2. Maximum 5 observations. Prioritize by impact — omit LOW confidence if you already have
+       3 or more HIGH or MEDIUM observations.
+    3. Recommendations must be actionable by a planner (not "add more tests" — instead
+       "add a test for the edge case described in requirement FEAT-03").
+    4. Do not address anything outside your declared domain ({role.focus}).
+    5. If you find no relevant observations, return exactly one observation:
+       Finding: "No concerns identified in this phase for domain: {role.focus}."
+       Evidence: "Phase context reviewed — no evidence found relevant to this domain."
+       Confidence: HIGH
+    </critical_rules>
+
+    <success_criteria>
+    - [ ] Every observation has an Evidence field with a direct quote or reference
+    - [ ] Maximum 5 observations returned
+    - [ ] All observations are within declared domain: {role.focus}
+    - [ ] Output matches the required markdown format exactly
+    - [ ] No preamble or trailing summary text outside the format
+    </success_criteria>
     ```
 
   Collect all Task() return values. For each: append the role name and the returned markdown

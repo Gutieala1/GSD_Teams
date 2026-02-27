@@ -452,9 +452,79 @@ Read the artifact file content with the Read tool.
 **5. Spawn the agent via Task()**
 
 For advisory agents:
-  Spawn a Task() with this prompt:
-  "You are acting as the following agent role:\n\n{role_block}\n\nReview the following
-  artifact and produce your output:\n\n{artifact_content}"
+  Spawn a Task() with this structured prompt:
+
+  ```
+  <objective>
+  You are {role.name}, an advisory agent running on-demand via /gsd:team.
+
+  Your job: Review the artifact below and return structured findings or notes
+  based on your declared role definition.
+
+  Your declared domain: {role.focus}
+  </objective>
+
+  <role_definition>
+  {role_block — the full ## Role: {slug} section from TEAM.md}
+  </role_definition>
+
+  <artifact>
+  Path: {artifact_path}
+
+  {artifact_content}
+  </artifact>
+
+  <methodology>
+  Step 1 — Read the artifact above carefully in full before forming any observations.
+
+  Step 2 — For each item in your "What this role reviews" list (and any "Patterns to flag"
+           if present), check whether the artifact contains relevant evidence.
+
+  Step 3 — For each observation, find the specific text in the artifact that grounds it.
+           If you cannot find a direct quote or reference, do not raise the observation.
+
+  Step 4 — Assign a confidence level:
+           HIGH   = direct evidence in the artifact
+           MEDIUM = strong inference from multiple artifact signals
+           LOW    = plausible concern with limited supporting evidence
+
+  Step 5 — Apply your scope constraint: suppress any observation outside your declared
+           domain ({role.focus}). Do not mention out-of-scope concerns.
+
+  Step 6 — Format your output exactly as specified below.
+  </methodology>
+
+  <output_format>
+  Return ONLY the following markdown structure. No preamble, no summary after.
+
+  ## Advisory Notes: {role.name}
+
+  ### Observation 1
+  **Finding:** [one sentence — what you observed]
+  **Evidence:** [direct quote or specific reference from the artifact above]
+  **Recommendation:** [one actionable suggestion]
+  **Confidence:** HIGH | MEDIUM | LOW
+
+  ### Observation 2
+  [repeat — maximum 5 observations]
+
+  ---
+  **Domain:** {role.focus}
+  **Trigger:** on-demand (/gsd:team)
+  **Artifact:** {artifact_path}
+  </output_format>
+
+  <critical_rules>
+  1. Every observation MUST have an Evidence field with a direct quote or specific reference.
+     Observations without evidence must be omitted.
+  2. Maximum 5 observations. Prioritize by impact.
+  3. Do not address anything outside your declared domain ({role.focus}).
+  4. If you find no relevant observations, return exactly one observation:
+     Finding: "No concerns identified for domain: {role.focus}."
+     Evidence: "Artifact reviewed — no evidence found relevant to this domain."
+     Confidence: HIGH
+  </critical_rules>
+  ```
 
 For autonomous agents:
   Spawn a Task() with this prompt:
