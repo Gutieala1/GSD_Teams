@@ -155,7 +155,11 @@ than replaces.
   2. A v2 TEAM.md role with `mode: autonomous` and explicit `allowed_paths` and `allowed_tools` fields is parsed correctly and scope constraints are stored and readable
   3. `/gsd:settings` shows an "Agent Studio" toggle that writes `workflow.agent_studio` to config.json without dropping any existing workflow keys
   4. Both `workflow.review_team: true` and `workflow.agent_studio: true` can be active simultaneously in config.json — they are independent flags
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — TEAM.md v2 template (version: 2, Doc Writer example with scope.allowed_paths/allowed_tools) + parser spec in ARCHITECTURE.md
+- [ ] 06-02-PLAN.md — scripts/patch-settings-agent-studio.py (4-touch-point patcher) + install.sh extended for agent_studio config key
 
 ### Phase 7: Agent Dispatcher
 **Goal**: `agent-dispatcher.md` is the single routing layer for all agent trigger types. When called with a trigger context, it reads TEAM.md, applies version defaults, filters agents by trigger match, and routes: advisory post-plan agents to the unchanged review-team.md pipeline; advisory pre-plan agents to advisory output collection; autonomous agents to autonomous execution. When no agents match the trigger context, it exits with zero latency added.
@@ -224,7 +228,7 @@ than replaces.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 6. TEAM.md v2 Schema + Config Foundation | 0/TBD | Not started | - |
+| 6. TEAM.md v2 Schema + Config Foundation | 0/2 | Not started | - |
 | 7. Agent Dispatcher | 0/TBD | Not started | - |
 | 8. Team Roster /gsd:team | 0/TBD | Not started | - |
 | 9. Lifecycle Trigger Hooks | 0/TBD | Not started | - |
