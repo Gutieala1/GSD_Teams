@@ -140,7 +140,7 @@ than replaces.
 - [ ] **Phase 7: Agent Dispatcher** — Single routing layer live, post-plan path wired through dispatcher to existing review pipeline, no-op on empty match
 - [ ] **Phase 8: Team Roster /gsd:team** — Users can view, enable/disable, and invoke agents from the roster command
 - [ ] **Phase 9: Lifecycle Trigger Hooks** — Pre-plan and post-phase agent gates patched into GSD core workflows, on-demand invoke path live
-- [x] **Phase 10: Advisory Output to Planner** — Pre-plan advisory agent notes injected into planner Task() context, planner always produces a plan (completed 2026-02-27)
+- [x] **Phase 10: Advisory Output to Planner** — Pre-plan advisory agent notes injected into planner Task() context, planner always produces a plan (completed 2026-02-27)
 - [ ] **Phase 11: Agent Creation /gsd:new-agent** — Users can create agents through guided conversation, definition written to TEAM.md and agents/ directory
 - [ ] **Phase 12: New-Project Integration** — Single question at project init, project-aware agent proposals, delegates to /gsd:new-agent
 
@@ -214,8 +214,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md — scripts/patch-plan-phase-p10.py (gate move before planner + AGENT_NOTES injection) + install.sh updated
-- [ ] 10-02-PLAN.md — workflows/agent-dispatcher.md route_by_mode update (output_type split: notes → direct return, findings → review pipeline post-plan only) + ROADMAP success criterion 2 update
+- [x] 10-01-PLAN.md — scripts/patch-plan-phase-p10.py (gate move before planner + AGENT_NOTES injection) + install.sh updated
+- [x] 10-02-PLAN.md — workflows/agent-dispatcher.md route_by_mode update (output_type split: notes → direct return, findings → review pipeline post-plan only) + ROADMAP success criterion 2 update
 
 ### Phase 11: Agent Creation /gsd:new-agent
 **Goal**: Users can run `/gsd:new-agent` and create a new agent through a guided conversation that captures purpose, domain, mode, triggers, scope (for autonomous agents), and output type. A decision gate shows the complete agent definition before any file is written. On confirmation, the role block is appended to TEAM.md and an agent markdown file is created at `agents/gsd-agent-{slug}.md` if the agent requires a custom prompt. Agent creation plans bypass the review pipeline.
@@ -226,7 +226,11 @@ Plans:
   2. No files are written until the user explicitly confirms at the decision gate — cancellation at the gate leaves TEAM.md and agents/ directory unchanged
   3. On confirmation, the new role block appears in `.planning/TEAM.md` under `roles:` and the agent file is created at `agents/gsd-agent-{slug}.md` — the created agent is immediately visible in `/gsd:team` roster
   4. Plans executed during agent creation do not trigger the review pipeline — the artifact type bypass declared in DISP-03 prevents code-oriented reviewers from running on agent definition files
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — workflows/new-agent.md (9-step guided conversation: purpose → mode → trigger → output type → advisory details → scope → decision gate → write)
+- [ ] 11-02-PLAN.md — commands/gsd/new-agent.md (slash command entry point) + workflows/team-studio.md add_agent step (live routing to /gsd:new-agent)
 
 ### Phase 12: New-Project Integration
 **Goal**: After `/gsd:new-project` completes and PROJECT.md is committed, one question is asked: "Do you want to set up an agent team?" The options are "Set up now", "Set up later (/gsd:team)", and "Skip". Choosing "Set up now" reads PROJECT.md goals and stack, proposes 2-3 tailored agents, and delegates each creation to `/gsd:new-agent`. Choosing "Set up later" or "Skip" produces an outcome identical to v1.0. Agent configuration is never inlined into the new-project flow.
@@ -249,7 +253,7 @@ Plans:
 | 8. Team Roster /gsd:team | 0/2 | Not started | - |
 | 9. Lifecycle Trigger Hooks | 0/2 | Not started | - |
 | 10. Advisory Output to Planner | 0/2 | Complete    | 2026-02-27 |
-| 11. Agent Creation /gsd:new-agent | 0/TBD | Not started | - |
+| 11. Agent Creation /gsd:new-agent | 0/2 | Not started | - |
 | 12. New-Project Integration | 0/TBD | Not started | - |
 
 ## v2 Coverage
