@@ -442,16 +442,20 @@ Return to present_actions.
 </step>
 
 <step name="add_agent">
-Inform the user of the available agent creation paths and route to /gsd:new-reviewer.
+Route the user to the correct agent creation command based on what they want to create.
 
 Inform the user:
 
 "To add an agent:
-- For a **review-team role** (advisory, post-plan reviewer): run `/gsd:new-reviewer`
-- For a full **agent role** (any mode, trigger, or output type): `/gsd:new-agent` is available
-  in a future update (Phase 11)
+- For a **full agent role** (any mode, trigger, or output type): run `/gsd:new-agent`
+- For a **review-team role only** (advisory, post-plan reviewer, shortcut flow): run `/gsd:new-reviewer`
 
-Run `/gsd:new-reviewer` now to create a reviewer role."
+`/gsd:new-agent` supports all modes (advisory and autonomous), all triggers (pre-plan, post-plan,
+post-phase, on-demand), and all output types (findings, notes, artifact). Use it for any new agent.
+
+`/gsd:new-reviewer` is a shortcut for post-plan advisory reviewers only.
+
+Run `/gsd:new-agent` to create your agent."
 
 Return to present_actions.
 </step>
