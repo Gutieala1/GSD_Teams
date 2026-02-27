@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 ## Current Position
 
-Phase: 09-lifecycle-trigger-hooks — plan 01 of 3 complete
-Next phase: 09-lifecycle-trigger-hooks (plan 02)
-Status: Phase 09 in progress — 09-01 complete (patch-plan-phase.py delivered)
-Last activity: 2026-02-27 — 09-01 complete, pre_plan_agent_gate wired into plan-phase.md
+Phase: 09-lifecycle-trigger-hooks — plan 02 of 3 complete
+Next phase: 09-lifecycle-trigger-hooks (plan 03)
+Status: Phase 09 in progress — 09-02 complete (patch-execute-phase.py delivered + install.sh wired)
+Last activity: 2026-02-27 — 09-02 complete, post_phase_agent_gate wired into execute-phase.md; install.sh SC4 idempotency confirmed
 
-Progress: [████░░░░░░] v2.0 — phase 09 in progress (plan 01/03 done)
+Progress: [█████░░░░░] v2.0 — phase 09 in progress (plan 02/03 done)
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Progress: [████░░░░░░] v2.0 — phase 09 in progress (plan 0
 | Phase 08-team-roster-gsd-team P01 | 2min | 2 tasks | 3 files |
 | Phase 08-team-roster-gsd-team P02 | 1min | 2 tasks | 2 files |
 | Phase 09-lifecycle-trigger-hooks P01 | 2 | 1 tasks | 2 files |
+| Phase 09-lifecycle-trigger-hooks P02 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -157,6 +158,10 @@ Key architectural decisions from project initialization:
 - [Phase 09-01]: Idempotency string pre_plan_agent_gate embedded as HTML comment in inserted section — heading uses hyphens/spaces which don't match underscore identifier used for idempotency check
 - [Phase 09-01]: pre_plan_agent_gate step in plan-phase.md is fail-open: TEAM.md missing, dispatcher error, or config absent all log and proceed silently — plan creation never blocked by gate failure
 - [Phase 09-01]: Phase 10 (ADVY-01) boundary enforced: pre_plan_agent_gate fires dispatcher and displays output but does NOT inject notes into planner Task() prompt in step 8
+- [Phase 09-02]: execute-phase.md uses XML <step> tags (not numbered markdown like plan-phase.md) — patch anchor is <step name="close_parent_artifacts"> with insert-before pattern
+- [Phase 09-02]: post_phase_agent_gate idempotency via 'post_phase_agent_gate' in content — no HTML comment needed since string appears directly in <step name="..."> tag
+- [Phase 09-02]: install.sh Section 6 additions are purely additive — PLAN_PHASE and EXECUTE_PHASE variables + existence checks + two new invocations appended after existing four patches
+- [Phase 09-02]: SC4 idempotency confirmed: second full install.sh run shows all six patches print [SKIP]
 
 ### Pending Todos
 
@@ -171,5 +176,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 09-01-PLAN.md — pre_plan_agent_gate patch script + plan-phase.md patched (09-01-SUMMARY.md generated)
+Stopped at: Completed 09-02-PLAN.md — post_phase_agent_gate patch script + execute-phase.md patched + install.sh updated (09-02-SUMMARY.md generated)
 Resume file: None
