@@ -630,20 +630,199 @@ Return to present_actions.
 </step>
 
 <step name="add_agent">
-Route the user to the correct agent creation command based on what they want to create.
+Read project context, generate smart agent suggestions tailored to this project, then route
+to creation. Falls back to blank-slate /gsd:new-agent if no project context is found.
 
-Inform the user:
+**1. Read project context**
 
-"To add an agent:
-- For a **full agent role** (any mode, trigger, or output type): run `/gsd:new-agent`
-- For a **review-team role only** (advisory, post-plan reviewer, shortcut flow): run `/gsd:new-reviewer`
+Check for and read these files with the Read tool:
 
-`/gsd:new-agent` supports all modes (advisory and autonomous), all triggers (pre-plan, post-plan,
-post-phase, on-demand), and all output types (findings, notes, artifact). Use it for any new agent.
+```bash
+[ -f ".planning/PROJECT.md" ] && echo "EXISTS" || echo "MISSING"
+[ -f ".planning/ROADMAP.md" ] && echo "EXISTS" || echo "MISSING"
+```
 
-`/gsd:new-reviewer` is a shortcut for post-plan advisory reviewers only.
+If both are MISSING:
+  Announce: "No project context found — falling back to blank-slate agent creation."
+  Inform the user: "Run `/gsd:new-agent` to create a new agent through the guided conversation."
+  Return to present_actions.
 
-Run `/gsd:new-agent` to create your agent."
+If at least one exists: read whichever files are present. Store the combined content as
+`project_context`.
+
+**2. Analyze and generate suggestions**
+
+With `project_context` and the in-memory `roster` in hand, derive up to 3 agent suggestions
+tailored to THIS specific project. For each suggestion, generate ALL fields — no placeholders:
+
+- `display_name` and `role_slug` (kebab-case)
+- `purpose` — one sentence describing what this agent does
+- `mode` — advisory (most cases) or autonomous
+- `trigger` — post-phase, post-plan, pre-plan, or on-demand
+- `output_type` — findings or notes (advisory), artifact (autonomous)
+- `criteria_list` — 3–5 specific criteria as bullet points
+- `patterns_list` — 2–3 specific matchable patterns with concrete examples
+  Format: `- {pattern name}: {concrete example}`
+- `severity_critical`, `severity_major`, `severity_minor` — for findings agents
+- `calibration_critical`, `calibration_major`, `calibration_minor` — one concrete example each
+- `routing_critical` = `block_and_escalate`, `routing_major` = `send_for_rework`,
+  `routing_minor` = `log_and_continue` (use standard routing unless domain demands otherwise)
+- `why` — one sentence explaining why this agent is relevant to THIS project specifically
+
+**Derivation signals — use ALL of these:**
+
+- **Domain/stack**: What technology, language, or framework does this project use?
+  → Domain-specific reviewers (e.g. TypeScript type safety checker, SQL query auditor)
+- **Upcoming phases**: What work is coming up in the roadmap phases?
+  → Phase-aligned agents (e.g. auth phase → security-focused reviewer)
+- **Project goals**: What does the project care about (reliability, speed, compliance, UX)?
+  → Goal-aligned agents (e.g. reliability → error handling checker)
+- **Existing roster**: What agents already exist?
+  → DO NOT suggest agents with the same or overlapping focus as existing `roster` entries.
+  → Look for coverage GAPS instead.
+
+Generate 1–3 suggestions. Every suggestion must be concrete and grounded in the actual
+project context — no generic "Security Auditor" unless the project context supports it.
+
+**3. Present suggestions**
+
+```
+AskUserQuestion([{
+  question: "Based on your project, here are agents that could help — pick one to create:",
+  header: "Suggestions",
+  multiSelect: false,
+  options: [
+    // one entry per suggestion (up to 3):
+    { label: "{display_name}", description: "{why}" },
+    // always last:
+    { label: "Create from scratch", description: "Open /gsd:new-agent with no pre-fill" }
+  ]
+}])
+```
+
+If "Create from scratch":
+  Inform the user: "Run `/gsd:new-agent` to create a new agent through the guided conversation."
+  Return to present_actions.
+
+**4. Show suggestion preview and confirm**
+
+For the selected suggestion, display the full role block:
+
+```
+## Role: {display_name}
+
+```yaml
+name: {role_slug}
+focus: {purpose}
+mode: {mode}
+trigger: {trigger}
+output_type: {output_type}
+enabled: true
+```
+
+**What this role reviews:**
+{criteria_list}
+
+**Patterns to flag:**
+{patterns_list}
+
+**Severity thresholds:**
+- `critical`: {severity_critical}
+- `major`: {severity_major}
+- `minor`: {severity_minor}
+
+**Calibration examples:**
+- `critical`: {calibration_critical}
+- `major`: {calibration_major}
+- `minor`: {calibration_minor}
+
+**Routing hints:**
+- Critical findings: `{routing_critical}`
+- Major findings: `{routing_major}`
+- Minor findings: `{routing_minor}`
+```
+
+Then ask for confirmation:
+
+```
+AskUserQuestion([{
+  question: "Create '{display_name}' as shown?",
+  header: "Confirm",
+  multiSelect: false,
+  options: [
+    { label: "Create agent",        description: "Write this role to TEAM.md now" },
+    { label: "Customize first",     description: "Run /gsd:new-agent to adjust details" },
+    { label: "Back to suggestions", description: "See the other suggestions" },
+    { label: "Cancel",              description: "Return to roster without adding an agent" }
+  ]
+}])
+```
+
+- "Create agent"        → proceed to step 5
+- "Customize first"     → announce "Run `/gsd:new-agent`. Starting point: {purpose},
+                          mode: {mode}, trigger: {trigger}." → return to present_actions
+- "Back to suggestions" → return to step 3 (re-present suggestion menu)
+- "Cancel"              → return to present_actions
+
+**5. Write the suggested agent to TEAM.md**
+
+Slug collision check: if `role_slug` already exists in `roster`, append `-2` suffix and
+announce: "Slug '{role_slug}' already exists — using '{role_slug}-2'."
+
+1. Read current `.planning/TEAM.md` with the Read tool (re-read for latest content)
+2. Add `{role_slug}` to the `roles:` frontmatter list
+3. Append this block to the end of the file body:
+
+```
+---
+
+## Role: {display_name}
+
+```yaml
+name: {role_slug}
+focus: {purpose}
+mode: {mode}
+trigger: {trigger}
+output_type: {output_type}
+enabled: true
+```
+
+**What this role reviews:**
+{criteria_list}
+
+**Patterns to flag:**
+{patterns_list}
+
+**Severity thresholds:**
+- `critical`: {severity_critical}
+- `major`: {severity_major}
+- `minor`: {severity_minor}
+
+**Calibration examples:**
+- `critical`: {calibration_critical}
+- `major`: {calibration_major}
+- `minor`: {calibration_minor}
+
+**Routing hints:**
+- Critical findings: `{routing_critical}`
+- Major findings: `{routing_major}`
+- Minor findings: `{routing_minor}`
+```
+
+4. Write the full updated TEAM.md with the Write tool.
+
+5. Commit:
+
+```bash
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit \
+  "feat(agents): add {role_slug} advisory agent (project-aware suggestion)" \
+  --files ".planning/TEAM.md"
+```
+
+6. Announce: "Agent '{display_name}' added to `.planning/TEAM.md`."
+
+Update the in-memory `roster` to include the new agent. Re-display the updated roster table
+inline (render from updated `roster` — do not call back to show_roster).
 
 Return to present_actions.
 </step>
