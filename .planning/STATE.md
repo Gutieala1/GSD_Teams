@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 ## Current Position
 
-Phase: 06-team-md-v2-schema-config-foundation ✅ COMPLETE (verified 4/4)
-Next phase: 07-agent-dispatcher
-Status: Phase 06 complete — ready to plan Phase 07
-Last activity: 2026-02-27 — Phase 06 verified 4/4, all success criteria met
+Phase: 07-agent-dispatcher (Plan 2 of N complete)
+Last completed: 07-02-PLAN.md — dispatcher patch script + install.sh wiring
+Status: Phase 07 in progress — dispatcher patch script created, install.sh updated
+Last activity: 2026-02-27 — 07-02 executed: patch-execute-plan-dispatcher.py + install.sh
 
-Progress: [█░░░░░░░░░] v2.0 — phase 06 complete (1 of 7)
+Progress: [██░░░░░░░░] v2.0 — phase 07 in progress (2 of 7)
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [█░░░░░░░░░] v2.0 — phase 06 complete (1 of 7)
 | Phase 05-new-reviewer-starter-roles-docs P03 | ~10 | 2 tasks | 2 files |
 | Phase 06-team-md-v2-schema-config-foundation P01 | ~2 | 2 tasks | 2 files |
 | Phase 06-team-md-v2-schema-config-foundation P02 | 2 | 2 tasks | 2 files |
+| Phase 07-agent-dispatcher P02 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -131,6 +132,10 @@ Key architectural decisions from project initialization:
 - [Phase 06-02]: Anchors target post-review-team-patch state of settings.md — Touch point 1 anchors on Review Team closing block (not original un-patched content)
 - [Phase 06-02]: Single jq pipe filter for Section 7 multi-key update — avoids race condition from two separate mktemp/mv sequences
 - [Phase 06-02]: workflow.agent_studio is an independent boolean flag — does not affect workflow.review_team; both can be true simultaneously
+- [Phase 07-02]: Anchor uses full review_team_gate step body for clean step replacement via content.replace(anchor, new_body, 1)
+- [Phase 07-02]: Idempotency check uses 'agent-dispatcher.md' in content — unique string only present after dispatcher patch applied
+- [Phase 07-02]: Dispatcher patch is 4th in install.sh Section 6 ordering — patch-execute-plan.py inserts step first, dispatcher patch replaces step body second
+- [Phase 07-02]: Section 5 glob copy unchanged — agent-dispatcher.md picked up automatically by workflows/*.md when it exists
 
 ### Pending Todos
 
@@ -145,5 +150,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 06-02-PLAN.md — patch-settings-agent-studio.py created + install.sh extended
+Stopped at: Completed 07-02-PLAN.md — patch-execute-plan-dispatcher.py created + install.sh updated for dispatcher wiring
 Resume file: None
