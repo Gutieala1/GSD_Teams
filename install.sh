@@ -172,6 +172,7 @@ fi
 python3 "$EXT_DIR/scripts/patch-execute-plan.py" "$EXECUTE_PLAN"
 python3 "$EXT_DIR/scripts/patch-settings.py" "$SETTINGS"
 python3 "$EXT_DIR/scripts/patch-settings-agent-studio.py" "$SETTINGS"
+python3 "$EXT_DIR/scripts/patch-execute-plan-dispatcher.py" "$EXECUTE_PLAN"
 
 # ------------------------------------------------------------------------------
 # Section 7: config.json update
@@ -234,7 +235,7 @@ echo "  GSD location:    $GSD_DIR"
 echo "  Extension files: $EXT_INSTALL_DIR"
 echo ""
 echo "  Patches applied:"
-echo "    - execute-plan.md (review_team_gate step)"
+echo "    - execute-plan.md (review_team_gate step + dispatcher wiring)"
 echo "    - settings.md (Review Team toggle + Agent Studio toggle)"
 echo ""
 echo "  IMPORTANT: After running /gsd:update, re-run 'bash install.sh'"
