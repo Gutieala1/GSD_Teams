@@ -198,7 +198,11 @@ Plans:
   2. The pre-plan trigger (LIFE-02) fires after the plan-checker step and before plan creation — a pre-plan agent failure or timeout never blocks plan creation; the planner always proceeds
   3. The post-phase trigger (LIFE-03) fires after all plans in a phase complete — advisory agent output is written to `.planning/phases/XX-name/AGENT-REPORT.md`
   4. Running install.sh on a system already patched with v1.0 applies the new patches without duplicating or corrupting existing patch blocks
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — scripts/patch-plan-phase.py (pre_plan_agent_gate insertion, always fail-open, step renumbering)
+- [ ] 09-02-PLAN.md — scripts/patch-execute-phase.py (post_phase_agent_gate insertion) + install.sh updated for both Phase 9 patches
 
 ### Phase 10: Advisory Output to Planner
 **Goal**: Pre-plan advisory agent output is injected into the GSD planner's Task() context as an `<agent_notes>` block. Agents that fire at pre-plan genuinely inform what gets planned. The planner always produces a plan — advisory notes are input, not a gate. Advisory agents with `output_type: notes` return structured markdown; advisory agents with `output_type: findings` continue through the synthesizer pipeline.
@@ -239,7 +243,7 @@ Plans:
 | 6. TEAM.md v2 Schema + Config Foundation | 0/2 | Not started | - |
 | 7. Agent Dispatcher | 0/2 | Not started | - |
 | 8. Team Roster /gsd:team | 0/2 | Not started | - |
-| 9. Lifecycle Trigger Hooks | 0/TBD | Not started | - |
+| 9. Lifecycle Trigger Hooks | 0/2 | Not started | - |
 | 10. Advisory Output to Planner | 0/TBD | Not started | - |
 | 11. Agent Creation /gsd:new-agent | 0/TBD | Not started | - |
 | 12. New-Project Integration | 0/TBD | Not started | - |
