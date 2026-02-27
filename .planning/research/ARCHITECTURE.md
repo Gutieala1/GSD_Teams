@@ -788,3 +788,68 @@ for this architecture analysis.
 ---
 *Architecture research for: GSD Agent Studio v2.0*
 *Researched: 2026-02-26*
+
+---
+
+## Parser Specification (Phase 6 deliverable)
+
+This section is the authoritative reference for Phase 7 dispatcher implementation. All
+downstream components (agent-dispatcher.md, team-studio.md, and any future consumers of
+TEAM.md) must implement against this specification.
+
+### Version Detection Rule
+
+Read the integer `version` field from TEAM.md frontmatter. If `version >= 2`, apply full v2
+parsing. If `version == 1` or the field is absent, activate the v1 compatibility shim and
+inject defaults for all missing v2 fields. Comparison is numeric — `version: 2` (integer)
+not `version: "2"` (string).
+
+### Defaults Table (v1 Compatibility Shim)
+
+When `version: 1` or the version field is absent, the following defaults are injected for
+every role that does not explicitly declare a field:
+
+| Field | Default when absent | Notes |
+|-------|---------------------|-------|
+| `mode` | `advisory` | All v1 roles are advisory |
+| `trigger` | `post-plan` | v1 roles fire after each plan, matching existing review pipeline behavior |
+| `tools` | `[]` | No filesystem tool access override |
+| `output_type` | `findings` | v1 roles produce findings, routed through synthesizer |
+| `commit` | `false` | v1 roles do not commit autonomously |
+| `commit_message` | `null` | Not applicable when commit: false |
+| `scope.allowed_paths` | `[]` | No path restrictions declared |
+| `scope.allowed_tools` | `[]` | No tool restrictions declared |
+
+### normalizeRole Algorithm
+
+The dispatcher applies this function to every role after reading TEAM.md, before any
+routing decisions are made. No downstream code should ever see a partially-specified role.
+
+```
+function normalizeRole(role, version):
+  if version < 2:
+    role.mode             = role.mode             ?? "advisory"
+    role.trigger          = role.trigger          ?? "post-plan"
+    role.tools            = role.tools            ?? []
+    role.output_type      = role.output_type      ?? "findings"
+    role.commit           = role.commit           ?? false
+    role.commit_message   = role.commit_message   ?? null
+    role.scope            = role.scope            ?? {}
+    role.scope.allowed_paths  = role.scope.allowed_paths  ?? []
+    role.scope.allowed_tools  = role.scope.allowed_tools  ?? []
+  return role
+```
+
+### Key Behavioral Guarantee
+
+A TEAM.md with `version: 1` (or no version field) loaded through the v2 dispatcher produces
+identical routing behavior to the Phase 4 review pipeline. advisory mode + post-plan trigger
++ findings output_type is the v1 behavior path. No user migration is required.
+
+### Field Name Disambiguation
+
+The `tools:` field at the top level of a role block is reserved for future use (tool-call
+access whitelist for the role agent itself). The `scope.allowed_tools:` field inside `scope:`
+constrains which Claude Code tools an autonomous agent may invoke during its execution. These
+are distinct concerns. The `scope.allowed_paths:` field specifies glob patterns the autonomous
+agent may read or write. Both scope fields are relevant only when `mode: autonomous`.
