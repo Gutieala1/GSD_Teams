@@ -619,6 +619,7 @@ function normalizeRole(role, version):
     role.tools = role.tools ?? []
     role.output_type = role.output_type ?? "findings"
     role.commit = role.commit ?? false
+  role.enabled = role.enabled ?? true    # management field — default true for ALL roles
   return role
 ```
 
@@ -837,6 +838,7 @@ function normalizeRole(role, version):
     role.scope            = role.scope            ?? {}
     role.scope.allowed_paths  = role.scope.allowed_paths  ?? []
     role.scope.allowed_tools  = role.scope.allowed_tools  ?? []
+  role.enabled = role.enabled ?? true    # management field — default true for ALL roles
   return role
 ```
 

@@ -147,15 +147,36 @@ For v2 TEAM.md (version >= 2): normalizeRole is a no-op — all fields are alrea
 
 Result: `normalized_roles` — a list where every role has all 8 fields populated regardless
 of which schema version the TEAM.md uses.
+
+**4. Apply enabled default and filter active roles**
+
+After applying normalizeRole to all roles, inject the `enabled` default and produce the
+`active_roles` list:
+
+```
+For each role in normalized_roles:
+  role.enabled = role.enabled ?? true
+  # ?? means: use existing value if present and non-null, else use the default
+  # This ensures v1 roles (no enabled field) and new v2 roles (enabled field absent) are
+  # treated as enabled. Only an explicit enabled: false disables a role.
+
+active_roles = [role for role in normalized_roles if role.enabled == true]
+```
+
+Pass `active_roles` (not `normalized_roles`) to the filter_by_trigger step.
+
+If `active_roles` is empty (all roles disabled):
+  Log: `Agent Dispatcher: all roles disabled — no-op`
+  Return immediately. Do NOT proceed to filter_by_trigger.
 </step>
 
 <step name="filter_by_trigger">
-Filter normalized_roles to only those relevant to the current trigger context, then group by mode.
+Filter active_roles to only those relevant to the current trigger context, then group by mode.
 
 **1. Filter by trigger_type**
 
 ```
-matched_roles = [role for role in normalized_roles if role.trigger == trigger_type]
+matched_roles = [role for role in active_roles if role.trigger == trigger_type]
 ```
 
 Where `trigger_type` is the input passed by the calling review_team_gate step
