@@ -117,3 +117,146 @@ Plans:
 | 3. Single Reviewer + Finding Schema | 3/3 | Complete | 2026-02-26 |
 | 4. Parallel Pipeline + Synthesizer + Routing | 3/3 | Complete | 2026-02-25 |
 | 5. /gsd:new-reviewer + Starter Roles + Docs | 3/3 | Complete | 2026-02-25 |
+
+---
+
+# Roadmap: GSD Agent Studio v2.0
+
+## Overview
+
+Seven phases building the full agent lifecycle platform on top of the proven v1.0 review
+pipeline. The order is dictated by strict architectural dependencies: schema must precede
+dispatcher; dispatcher must precede all trigger hooks and the management UI; lifecycle hooks
+must precede advisory injection; agent creation must precede new-project integration. Every
+phase delivers a coherent, verifiable capability — nothing is wired halfway.
+
+v1.0 reviewers are preserved unchanged throughout. The dispatcher routes advisory post-plan
+roles to the existing review-team.md pipeline without modification. Each phase extends rather
+than replaces.
+
+## Phases
+
+- [ ] **Phase 6: TEAM.md v2 Schema + Config Foundation** — v2 schema fields parse correctly, v1.0 TEAM.md files work unchanged, agent_studio toggle appears in settings
+- [ ] **Phase 7: Agent Dispatcher** — Single routing layer live, post-plan path wired through dispatcher to existing review pipeline, no-op on empty match
+- [ ] **Phase 8: Team Roster /gsd:team** — Users can view, enable/disable, and invoke agents from the roster command
+- [ ] **Phase 9: Lifecycle Trigger Hooks** — Pre-plan and post-phase agent gates patched into GSD core workflows, on-demand invoke path live
+- [ ] **Phase 10: Advisory Output to Planner** — Pre-plan advisory agent notes injected into planner Task() context, planner always produces a plan
+- [ ] **Phase 11: Agent Creation /gsd:new-agent** — Users can create agents through guided conversation, definition written to TEAM.md and agents/ directory
+- [ ] **Phase 12: New-Project Integration** — Single question at project init, project-aware agent proposals, delegates to /gsd:new-agent
+
+## Phase Details
+
+### Phase 6: TEAM.md v2 Schema + Config Foundation
+**Goal**: TEAM.md gains a v2 schema with additive optional fields (mode, triggers, output_type, scope, tools) and a version sentinel. Every v1.0 TEAM.md file loaded through the new parser produces identical behavior to v1.0 — no user migration required. The `workflow.agent_studio` toggle appears in `/gsd:settings` and is written to config.json.
+**Depends on**: Phase 5 (v1.0 complete)
+**Requirements**: AGNT-01, AGNT-02, AGNT-03
+**Success Criteria** (what must be TRUE):
+  1. A v1.0 TEAM.md file (no new fields, no version sentinel) loaded through the v2 parser produces defaults: mode advisory, trigger post-plan, output_type findings — behavior identical to v1.0
+  2. A v2 TEAM.md role with `mode: autonomous` and explicit `allowed_paths` and `allowed_tools` fields is parsed correctly and scope constraints are stored and readable
+  3. `/gsd:settings` shows an "Agent Studio" toggle that writes `workflow.agent_studio` to config.json without dropping any existing workflow keys
+  4. Both `workflow.review_team: true` and `workflow.agent_studio: true` can be active simultaneously in config.json — they are independent flags
+**Plans**: TBD
+
+### Phase 7: Agent Dispatcher
+**Goal**: `agent-dispatcher.md` is the single routing layer for all agent trigger types. When called with a trigger context, it reads TEAM.md, applies version defaults, filters agents by trigger match, and routes: advisory post-plan agents to the unchanged review-team.md pipeline; advisory pre-plan agents to advisory output collection; autonomous agents to autonomous execution. When no agents match the trigger context, it exits with zero latency added.
+**Depends on**: Phase 6
+**Requirements**: DISP-01, DISP-02, DISP-03
+**Success Criteria** (what must be TRUE):
+  1. The existing post-plan path (review_team_gate calling review-team.md) is redirected through agent-dispatcher.md — advisory post-plan agents reach the same review pipeline, producing identical REVIEW-REPORT.md output
+  2. When TEAM.md has no agents matching the current trigger context, dispatcher exits immediately with no Task() spawns and no observable latency
+  3. Agent creation plans are skipped by the dispatcher — the bypass flag in plan context is detected and the review pipeline does not fire on agent definition artifacts
+**Plans**: TBD
+
+### Phase 8: Team Roster /gsd:team
+**Goal**: Users can run `/gsd:team` to see all configured agents: name, mode, triggers, output_type, and enabled status. From the roster, users can add an agent (routed to /gsd:new-agent), remove an agent with confirmation, enable or disable an agent, and invoke an agent on-demand against a specified artifact.
+**Depends on**: Phase 7
+**Requirements**: ROST-01, ROST-02, ROST-03
+**Success Criteria** (what must be TRUE):
+  1. `/gsd:team` displays a formatted table of all agents in TEAM.md with name, mode, triggers, output_type, and enabled status — disabled agents appear in the table but are visually distinguished
+  2. From the roster, a user can disable an agent and confirm that subsequent dispatcher calls with a matching trigger context do not invoke the disabled agent
+  3. From the roster, a user can invoke an agent on-demand against a specified artifact — result is displayed inline and logged to AGENT-REPORT.md
+**Plans**: TBD
+
+### Phase 9: Lifecycle Trigger Hooks
+**Goal**: Three GSD core workflows are patched to call agent-dispatcher.md at the correct trigger points: plan-phase.md gains `pre_plan_agent_gate` (fires before plan creation, always fail-open); execute-phase.md gains `post_phase_agent_gate` (fires after all plans in a phase complete); the on-demand invoke path through /gsd:team is live. All patches are idempotent and safe on systems already patched with v1.0.
+**Depends on**: Phase 7
+**Requirements**: LIFE-01, LIFE-02, LIFE-03, LIFE-04
+**Success Criteria** (what must be TRUE):
+  1. The post-plan trigger (LIFE-01) calls agent-dispatcher.md instead of review-team.md directly — advisory post-plan agents reach the same review pipeline with no change in output
+  2. The pre-plan trigger (LIFE-02) fires after the plan-checker step and before plan creation — a pre-plan agent failure or timeout never blocks plan creation; the planner always proceeds
+  3. The post-phase trigger (LIFE-03) fires after all plans in a phase complete — advisory agent output is written to `.planning/phases/XX-name/AGENT-REPORT.md`
+  4. Running install.sh on a system already patched with v1.0 applies the new patches without duplicating or corrupting existing patch blocks
+**Plans**: TBD
+
+### Phase 10: Advisory Output to Planner
+**Goal**: Pre-plan advisory agent output is injected into the GSD planner's Task() context as an `<agent_notes>` block. Agents that fire at pre-plan genuinely inform what gets planned. The planner always produces a plan — advisory notes are input, not a gate. Advisory agents with `output_type: notes` return structured markdown; advisory agents with `output_type: findings` continue through the synthesizer pipeline.
+**Depends on**: Phase 9
+**Requirements**: ADVY-01, ADVY-02
+**Success Criteria** (what must be TRUE):
+  1. A pre-plan advisory agent with `output_type: notes` fires before plan creation and its structured markdown output appears in the planner's Task() prompt as an `<agent_notes>` block — the planner produces a plan that reflects or explicitly disregards the notes
+  2. A pre-plan advisory agent with `output_type: findings` fires before plan creation and its output routes through the existing synthesizer pipeline — it does not appear as `<agent_notes>` and does not block plan creation
+**Plans**: TBD
+
+### Phase 11: Agent Creation /gsd:new-agent
+**Goal**: Users can run `/gsd:new-agent` and create a new agent through a guided conversation that captures purpose, domain, mode, triggers, scope (for autonomous agents), and output type. A decision gate shows the complete agent definition before any file is written. On confirmation, the role block is appended to TEAM.md and an agent markdown file is created at `agents/gsd-agent-{slug}.md` if the agent requires a custom prompt. Agent creation plans bypass the review pipeline.
+**Depends on**: Phase 6, Phase 8
+**Requirements**: CREA-01, CREA-02, CREA-03, CREA-04
+**Success Criteria** (what must be TRUE):
+  1. `/gsd:new-agent` walks through a guided conversation (purpose, domain, mode, triggers, scope for autonomous, output type) and shows a complete agent definition preview before writing anything
+  2. No files are written until the user explicitly confirms at the decision gate — cancellation at the gate leaves TEAM.md and agents/ directory unchanged
+  3. On confirmation, the new role block appears in `.planning/TEAM.md` under `roles:` and the agent file is created at `agents/gsd-agent-{slug}.md` — the created agent is immediately visible in `/gsd:team` roster
+  4. Plans executed during agent creation do not trigger the review pipeline — the artifact type bypass declared in DISP-03 prevents code-oriented reviewers from running on agent definition files
+**Plans**: TBD
+
+### Phase 12: New-Project Integration
+**Goal**: After `/gsd:new-project` completes and PROJECT.md is committed, one question is asked: "Do you want to set up an agent team?" The options are "Set up now", "Set up later (/gsd:team)", and "Skip". Choosing "Set up now" reads PROJECT.md goals and stack, proposes 2-3 tailored agents, and delegates each creation to `/gsd:new-agent`. Choosing "Set up later" or "Skip" produces an outcome identical to v1.0. Agent configuration is never inlined into the new-project flow.
+**Depends on**: Phase 8, Phase 11
+**Requirements**: INIT-01, INIT-02, INIT-03
+**Success Criteria** (what must be TRUE):
+  1. After `/gsd:new-project` completes, exactly one question is asked about agent team setup — no additional questions about agent configuration appear in the new-project flow
+  2. Choosing "Set up now" produces 2-3 agent proposals derived from PROJECT.md goals and stack — each proposal is shown individually and the user approves, modifies, or skips each one before anything is written
+  3. Choosing "Set up later" or "Skip" produces an outcome identical to a v1.0 new-project run — no TEAM.md changes, no agent files created, new-project timing is effectively unchanged
+**Plans**: TBD
+
+## Progress
+
+**Execution Order:** 6 → 7 → 8 → 9 → 10 → 11 → 12
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 6. TEAM.md v2 Schema + Config Foundation | 0/TBD | Not started | - |
+| 7. Agent Dispatcher | 0/TBD | Not started | - |
+| 8. Team Roster /gsd:team | 0/TBD | Not started | - |
+| 9. Lifecycle Trigger Hooks | 0/TBD | Not started | - |
+| 10. Advisory Output to Planner | 0/TBD | Not started | - |
+| 11. Agent Creation /gsd:new-agent | 0/TBD | Not started | - |
+| 12. New-Project Integration | 0/TBD | Not started | - |
+
+## v2 Coverage
+
+**v2 requirements: 20 total — all mapped**
+
+| Requirement | Phase |
+|-------------|-------|
+| AGNT-01 | Phase 6 |
+| AGNT-02 | Phase 6 |
+| AGNT-03 | Phase 6 |
+| DISP-01 | Phase 7 |
+| DISP-02 | Phase 7 |
+| DISP-03 | Phase 7 |
+| ROST-01 | Phase 8 |
+| ROST-02 | Phase 8 |
+| ROST-03 | Phase 8 |
+| LIFE-01 | Phase 9 |
+| LIFE-02 | Phase 9 |
+| LIFE-03 | Phase 9 |
+| LIFE-04 | Phase 9 |
+| ADVY-01 | Phase 10 |
+| ADVY-02 | Phase 10 |
+| CREA-01 | Phase 11 |
+| CREA-02 | Phase 11 |
+| CREA-03 | Phase 11 |
+| CREA-04 | Phase 11 |
+| INIT-01 | Phase 12 |
+| INIT-02 | Phase 12 |
+| INIT-03 | Phase 12 |

@@ -175,15 +175,37 @@
 | TEAM-02 | Phase 5 | Pending |
 | INST-03 | Phase 5 | Pending |
 | INST-04 | Phase 5 | Pending |
+| AGNT-01 | Phase 6 | Pending |
+| AGNT-02 | Phase 6 | Pending |
+| AGNT-03 | Phase 6 | Pending |
+| DISP-01 | Phase 7 | Pending |
+| DISP-02 | Phase 7 | Pending |
+| DISP-03 | Phase 7 | Pending |
+| ROST-01 | Phase 8 | Pending |
+| ROST-02 | Phase 8 | Pending |
+| ROST-03 | Phase 8 | Pending |
+| LIFE-01 | Phase 9 | Pending |
+| LIFE-02 | Phase 9 | Pending |
+| LIFE-03 | Phase 9 | Pending |
+| LIFE-04 | Phase 9 | Pending |
+| ADVY-01 | Phase 10 | Pending |
+| ADVY-02 | Phase 10 | Pending |
+| CREA-01 | Phase 11 | Pending |
+| CREA-02 | Phase 11 | Pending |
+| CREA-03 | Phase 11 | Pending |
+| CREA-04 | Phase 11 | Pending |
+| INIT-01 | Phase 12 | Pending |
+| INIT-02 | Phase 12 | Pending |
+| INIT-03 | Phase 12 | Pending |
 
 **v1 Coverage:**
 - v1 requirements: 37 total — all delivered ✓
 
 **v2 Coverage:**
 - v2 requirements: 20 total (AGNT-01..03, DISP-01..03, ROST-01..03, LIFE-01..04, ADVY-01..02, CREA-01..04, INIT-01..03)
-- Mapped to phases: TBD (roadmap pending)
+- Mapped to phases: Phase 6–12 ✓
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-25 (v1), 2026-02-26 (v2)*
-*Last updated: 2026-02-26 — v2.0 Agent Studio requirements added*
+*Last updated: 2026-02-26 — v2.0 Agent Studio requirements added; traceability mapped to phases 6-12*
