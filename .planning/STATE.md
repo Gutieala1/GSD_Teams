@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 ## Current Position
 
-Phase: 11-agent-creation-new-agent — Plan 02 complete (2/2)
-Next phase: (phase 11 complete — next phase TBD)
-Status: Phase 11 complete — /gsd:new-agent command wired, team-studio add_agent routing live
-Last activity: 2026-02-27 — Phase 11 plan 02 complete (/gsd:new-agent command + team-studio routing)
+Phase: 12-new-project-integration — Plan 01 complete (1/1)
+Next phase: (phase 12 complete — v2.0 Agent Studio complete)
+Status: Phase 12 complete — new-project.md agent_team_hook patch script + install.sh wiring
+Last activity: 2026-02-27 — Phase 12 plan 01 complete (patch-new-project.py + install.sh Section 6 + Section 9)
 
-Progress: [██████░░░░] v2.0 — phase 11 complete (6 of 7)
+Progress: [███████░░░] v2.0 — phase 12 complete (7 of 7)
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Progress: [██████░░░░] v2.0 — phase 11 complete (6 of 7)
 | Phase 10-advisory-output-to-planner P01 | 4 | 2 tasks | 3 files |
 | Phase 11-agent-creation-new-agent P11-02 | 1min | 2 tasks | 2 files |
 | Phase 11-agent-creation-new-agent P11-01 | 2 | 1 tasks | 1 files |
+| Phase 12-new-project-integration P12-01 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -183,6 +184,12 @@ Key architectural decisions from project initialization:
 - [Phase 11-01]: gather_advisory_details fires only for advisory; gather_scope fires only for autonomous — strict mutual exclusion
 - [Phase 11-01]: write_agent creates version: 2 TEAM.md (not version: 1) — prevents normalizeRole shim from overriding explicit v2 fields
 - [Phase 11-01]: Cancel option in decision_gate exits with no writes — 'No files were written' announced explicitly
+- [Phase 12-01]: Anchor '\n## 9. Done\n' used for insertion — matches existing numbered step convention and is safe across GSD version updates
+- [Phase 12-01]: Idempotency string 'agent_team_hook' is unique to patched state — present in HTML comment and step body references
+- [Phase 12-01]: Set up later and Skip paths are semantically identical — both continue to Step 9 with no file writes, preserving v1.0 exit path
+- [Phase 12-01]: Proposals displayed inline as markdown block (not AskUserQuestion) — display and per-agent approval are separate interactions
+- [Phase 12-01]: No TEAM.md write in new-project step — full agent creation delegated to /gsd:new-agent exclusively (SC6)
+- [Phase 12-01]: Section 6 ordering: patch-new-project.py placed last after all prior patches — additive, no ordering dependency
 
 ### Pending Todos
 
@@ -197,5 +204,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 11-02-PLAN.md — /gsd:new-agent command file (commands/gsd/new-agent.md) + team-studio.md add_agent routing live (Phase 11 complete)
+Stopped at: Completed 12-01-PLAN.md — patch-new-project.py (agent_team_hook step) + install.sh Section 6 + Section 9 (Phase 12 complete — v2.0 Agent Studio complete)
 Resume file: None
