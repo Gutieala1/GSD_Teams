@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 ## Current Position
 
-Phase: 07-agent-dispatcher ✅ COMPLETE (verified 3/3)
-Next phase: 08-team-roster-gsd-team
-Status: Phase 07 complete — ready to plan Phase 08
-Last activity: 2026-02-27 — Phase 07 verified 3/3, all success criteria met
+Phase: 08-team-roster-gsd-team
+Current plan: 08-01 ✅ COMPLETE
+Status: Phase 08, Plan 01 complete — enabled filter patched into dispatcher
+Last activity: 2026-02-27 — 08-01 complete, active_roles filter added to agent-dispatcher.md
 
-Progress: [██░░░░░░░░] v2.0 — phase 07 complete (2 of 7)
+Progress: [███░░░░░░░] v2.0 — phase 08/plan 01 complete (9 of ~15 plans)
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [██░░░░░░░░] v2.0 — phase 07 complete (2 of 7)
 | Phase 06-team-md-v2-schema-config-foundation P02 | 2 | 2 tasks | 2 files |
 | Phase 07-agent-dispatcher P01 | 2min | 1 task | 1 file |
 | Phase 07-agent-dispatcher P02 | 4min | 2 tasks | 2 files |
+| Phase 08-team-roster-gsd-team P01 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -143,6 +144,9 @@ Key architectural decisions from project initialization:
 - [Phase 07-02]: Idempotency check uses 'agent-dispatcher.md' in content — unique string only present after dispatcher patch applied
 - [Phase 07-02]: Dispatcher patch is 4th in install.sh Section 6 ordering — patch-execute-plan.py inserts step first, dispatcher patch replaces step body second
 - [Phase 07-02]: Section 5 glob copy unchanged — agent-dispatcher.md picked up automatically by workflows/*.md when it exists
+- [Phase 08-01]: enabled default injected outside the version < 2 gate — enabled is a management field, not a schema version field; applies to v1 and v2 roles equally
+- [Phase 08-01]: active_roles list produced before filter_by_trigger receives control — disabled roles never reach trigger matching (ROST-03)
+- [Phase 08-01]: empty active_roles guard logs and returns immediately — prevents filter_by_trigger from running on an empty set
 
 ### Pending Todos
 
@@ -157,5 +161,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 07-01-PLAN.md — workflows/agent-dispatcher.md created (07-01-SUMMARY.md generated)
+Stopped at: Completed 08-01-PLAN.md — dispatcher enabled filter + ARCHITECTURE.md normalizeRole + templates/TEAM.md doc writer field (08-01-SUMMARY.md generated)
 Resume file: None
