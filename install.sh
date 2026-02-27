@@ -190,6 +190,15 @@ python3 "$EXT_DIR/scripts/patch-plan-phase.py" "$PLAN_PHASE"
 python3 "$EXT_DIR/scripts/patch-plan-phase-p10.py" "$PLAN_PHASE"
 python3 "$EXT_DIR/scripts/patch-execute-phase.py" "$EXECUTE_PHASE"
 
+NEW_PROJECT="$GSD_DIR/get-shit-done/workflows/new-project.md"
+
+if [ ! -f "$NEW_PROJECT" ]; then
+  echo "  ERROR: $NEW_PROJECT not found"
+  exit 1
+fi
+
+python3 "$EXT_DIR/scripts/patch-new-project.py" "$NEW_PROJECT"
+
 # ------------------------------------------------------------------------------
 # Section 7: config.json update
 # ------------------------------------------------------------------------------
@@ -255,6 +264,7 @@ echo "    - execute-plan.md (review_team_gate step + dispatcher wiring)"
 echo "    - settings.md (Review Team toggle + Agent Studio toggle)"
 echo "    - plan-phase.md (pre_plan_agent_gate step + AGENT_NOTES injection)"
 echo "    - execute-phase.md (post_phase_agent_gate step)"
+echo "    - new-project.md (agent_team_hook step — agent team setup offer)"
 echo ""
 echo "  IMPORTANT: After running /gsd:update, re-run 'bash install.sh'"
 echo "  to restore patches and the /gsd:new-reviewer command."
