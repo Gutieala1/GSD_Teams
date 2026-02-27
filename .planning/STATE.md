@@ -55,6 +55,7 @@ Progress: [██████░░░░] v2.0 — phase 11 complete (6 of 7)
 | Phase 10-advisory-output-to-planner P02 | 2min | 2 tasks | 1 file |
 | Phase 10-advisory-output-to-planner P01 | 4 | 2 tasks | 3 files |
 | Phase 11-agent-creation-new-agent P11-02 | 1min | 2 tasks | 2 files |
+| Phase 11-agent-creation-new-agent P11-01 | 2 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -178,6 +179,10 @@ Key architectural decisions from project initialization:
 - [Phase 11-agent-creation-new-agent]: /gsd:new-agent command file follows identical structure to commands/gsd/new-reviewer.md — YAML frontmatter + execution_context installed path + process gate preservation
 - [Phase 11-agent-creation-new-agent]: install.sh Section 5 glob (commands/gsd/*.md) picks up new-agent.md automatically — no install.sh modification required
 - [Phase 11-agent-creation-new-agent]: /gsd:new-agent is primary route in add_agent for all agent types; /gsd:new-reviewer remains as shortcut for post-plan advisory reviewers only
+- [Phase 11-01]: 9-step sequence chosen over 7-step to accommodate mode branching — advisory and autonomous paths require different detail gathering
+- [Phase 11-01]: gather_advisory_details fires only for advisory; gather_scope fires only for autonomous — strict mutual exclusion
+- [Phase 11-01]: write_agent creates version: 2 TEAM.md (not version: 1) — prevents normalizeRole shim from overriding explicit v2 fields
+- [Phase 11-01]: Cancel option in decision_gate exits with no writes — 'No files were written' announced explicitly
 
 ### Pending Todos
 
