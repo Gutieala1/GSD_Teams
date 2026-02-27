@@ -43,6 +43,7 @@ Progress: [░░░░░░░░░░] v2.0 — phase 06 in progress
 | Phase 05-new-reviewer-starter-roles-docs P01 | 1 | 1 tasks | 2 files |
 | Phase 05-new-reviewer-starter-roles-docs P02 | 2 | 2 tasks | 2 files |
 | Phase 05-new-reviewer-starter-roles-docs P03 | ~10 | 2 tasks | 2 files |
+| Phase 06-team-md-v2-schema-config-foundation P01 | ~2 | 2 tasks | 2 files |
 | Phase 06-team-md-v2-schema-config-foundation P02 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
@@ -122,6 +123,11 @@ Key architectural decisions from project initialization:
 - [Phase 05-03]: Post-update procedure uses re-run install.sh — NOT /gsd:reapply-patches; README.md and Section 9 completion message both direct users to `bash install.sh` as the single restore command
 - [Phase 05-03]: Version check is warn-only — installer proceeds regardless of GSD version mismatch (hint, not hard requirement)
 - [Phase 05-03]: sort -V used for semver range check — no custom semver parser needed; two printf | sort -V calls handle min/max range cleanly
+- [Phase 06-01]: allowed_tools: used inside scope: (not top-level tools:) — distinguishes filesystem tool access constraint from a hypothetical top-level tool-call whitelist; matches success criteria naming explicitly
+- [Phase 06-01]: agents: list omitted from v2 template frontmatter — dispatcher uses roles: exclusively; agents: is informational only per research open question resolution
+- [Phase 06-01]: Three v1 role blocks (Security Auditor, Rules Lawyer, Performance Analyst) unchanged by design — demonstrates v1 compatibility; no mode/trigger/scope added
+- [Phase 06-01]: normalizeRole shim triggers on version < 2 (numeric) — integer sentinel is the contract, string comparison explicitly rejected in spec prose
+- [Phase 06-01]: scope fields default to [] when absent — no path or tool restrictions for roles that don't declare scope
 - [Phase 06-02]: Anchors target post-review-team-patch state of settings.md — Touch point 1 anchors on Review Team closing block (not original un-patched content)
 - [Phase 06-02]: Single jq pipe filter for Section 7 multi-key update — avoids race condition from two separate mktemp/mv sequences
 - [Phase 06-02]: workflow.agent_studio is an independent boolean flag — does not affect workflow.review_team; both can be true simultaneously
