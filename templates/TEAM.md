@@ -108,6 +108,7 @@ trigger: post-phase        # pre-plan | post-plan | post-phase | on-demand  (def
 output_type: artifact      # findings | artifact | advisory  (default: findings)
 commit: true               # true | false  (default: false)
 commit_message: "docs(auto): update docs after phase {phase}"
+enabled: false           # true | false  (default: true when absent — omit to keep enabled)
 
 # scope — autonomous agents only. Constrains filesystem and tool access.
 scope:
