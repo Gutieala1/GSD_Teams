@@ -1,9 +1,10 @@
 ---
-version: 1
+version: 2
 roles:
   - security-auditor
   - rules-lawyer
   - performance-analyst
+  - doc-writer
 ---
 
 # Review Team
@@ -90,3 +91,44 @@ focus: Performance implications of new code and architectural decisions
 - Critical findings: `block_and_escalate`
 - Major findings: `send_for_rework`
 - Minor findings: `log_and_continue`
+
+---
+
+<!-- v2 example role: demonstrates autonomous mode, scope constraints, and lifecycle trigger -->
+
+## Role: Doc Writer
+
+```yaml
+name: doc-writer
+focus: Keeps documentation in sync with implementation
+
+# V2 fields — all optional. When absent, defaults apply (see parser spec).
+mode: autonomous           # advisory | autonomous  (default: advisory)
+trigger: post-phase        # pre-plan | post-plan | post-phase | on-demand  (default: post-plan)
+output_type: artifact      # findings | artifact | advisory  (default: findings)
+commit: true               # true | false  (default: false)
+commit_message: "docs(auto): update docs after phase {phase}"
+
+# scope — autonomous agents only. Constrains filesystem and tool access.
+scope:
+  allowed_paths:           # glob patterns the agent may read/write
+    - "docs/**"
+    - "*.md"
+    - ".planning/**/*.md"
+  allowed_tools:           # Claude Code tool names permitted
+    - Read
+    - Write
+    - Grep
+```
+
+**What this role reviews:**
+- README.md accuracy against current implementation
+- API reference docs matching exported contracts
+- Inline code comments and docstrings
+
+**Severity thresholds:**
+- `critical`: N/A — doc-writer is autonomous, does not produce findings
+- `major`: N/A
+- `minor`: N/A
+
+**Routing hints:** N/A — output_type: artifact, not findings
