@@ -53,6 +53,7 @@ Progress: [█████░░░░░] v2.0 — phase 10 complete (5 of 7)
 | Phase 09-lifecycle-trigger-hooks P02 | 2 | 2 tasks | 3 files |
 | Phase 10-advisory-output-to-planner P01 | ~2min | 2 tasks | 2 files |
 | Phase 10-advisory-output-to-planner P02 | 2min | 2 tasks | 1 file |
+| Phase 10-advisory-output-to-planner P01 | 4 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -171,6 +172,8 @@ Key architectural decisions from project initialization:
 - [Phase 10-02]: notes agents spawn ALL in single message for true parallelism — same pattern as spawn_reviewers in review-team.md (PIPE-01 guarantee)
 - [Phase 10-02]: AGENT_NOTES_BLOCK only included in dispatcher return text when notes agents actually fired — no block when advisory_notes_roles is empty
 - [Phase 10-02]: findings agents at pre-plan trigger: log descriptive warning and skip — no SUMMARY.md exists at pre-plan time, review pipeline cannot run
+- [Phase 10-01]: Net-zero step count: adding step 8 and removing step 13 cancel out — steps 14/15 unchanged; Anchor A slices gate body without renaming step 14
+- [Phase 10-01]: AGENT_NOTES idempotency string (not pre_plan_agent_gate) used in Phase 10 patch — pre_plan_agent_gate already present from Phase 9, AGENT_NOTES unique to Phase 10
 
 ### Pending Todos
 
