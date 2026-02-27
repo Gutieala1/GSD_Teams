@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 ## Current Position
 
 Phase: 08-team-roster-gsd-team
-Current plan: 08-01 ✅ COMPLETE
-Status: Phase 08, Plan 01 complete — enabled filter patched into dispatcher
-Last activity: 2026-02-27 — 08-01 complete, active_roles filter added to agent-dispatcher.md
+Current plan: 08-02 ✅ COMPLETE
+Status: Phase 08, Plan 02 complete — /gsd:team command + team-studio.md interactive workflow created
+Last activity: 2026-02-27 — 08-02 complete, ROST-01/ROST-02 roster management fully implemented
 
-Progress: [███░░░░░░░] v2.0 — phase 08/plan 01 complete (9 of ~15 plans)
+Progress: [███░░░░░░░] v2.0 — phase 08/plan 02 complete (10 of ~15 plans)
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Progress: [███░░░░░░░] v2.0 — phase 08/plan 01 complete (9
 | Phase 07-agent-dispatcher P01 | 2min | 1 task | 1 file |
 | Phase 07-agent-dispatcher P02 | 4min | 2 tasks | 2 files |
 | Phase 08-team-roster-gsd-team P01 | 2min | 2 tasks | 3 files |
+| Phase 08-team-roster-gsd-team P02 | 1min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -147,6 +148,11 @@ Key architectural decisions from project initialization:
 - [Phase 08-01]: enabled default injected outside the version < 2 gate — enabled is a management field, not a schema version field; applies to v1 and v2 roles equally
 - [Phase 08-01]: active_roles list produced before filter_by_trigger receives control — disabled roles never reach trigger matching (ROST-03)
 - [Phase 08-01]: empty active_roles guard logs and returns immediately — prevents filter_by_trigger from running on an empty set
+- [Phase 08-02]: /gsd:team entry point references installed path (~/.claude/...) not source path — consistent with new-reviewer.md convention
+- [Phase 08-02]: show_roster re-uses dispatcher normalizeRole logic inline — no shared import; keeps workflow self-contained
+- [Phase 08-02]: invoke_on_demand filters to active_roles (enabled != false) only — disabled agents cannot be invoked on-demand
+- [Phase 08-02]: add_agent step: /gsd:new-reviewer for review roles, /gsd:new-agent noted as Phase 11 — no @-reference added (workflow not yet built)
+- [Phase 08-02]: remove_agent shows role block preview before confirmation gate — user sees exactly what will be deleted
 
 ### Pending Todos
 
@@ -161,5 +167,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 08-01-PLAN.md — dispatcher enabled filter + ARCHITECTURE.md normalizeRole + templates/TEAM.md doc writer field (08-01-SUMMARY.md generated)
+Stopped at: Completed 08-02-PLAN.md — /gsd:team command + team-studio.md 7-step workflow (08-02-SUMMARY.md generated)
 Resume file: None
