@@ -211,7 +211,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. A pre-plan advisory agent with `output_type: notes` fires before plan creation and its structured markdown output appears in the planner's Task() prompt as an `<agent_notes>` block — the planner produces a plan that reflects or explicitly disregards the notes
   2. A pre-plan advisory agent with `output_type: findings` fires before plan creation and its output routes through the existing synthesizer pipeline — it does not appear as `<agent_notes>` and does not block plan creation
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — scripts/patch-plan-phase-p10.py (gate move before planner + AGENT_NOTES injection) + install.sh updated
+- [ ] 10-02-PLAN.md — workflows/agent-dispatcher.md route_by_mode update (output_type split: notes → direct return, findings → review pipeline post-plan only)
 
 ### Phase 11: Agent Creation /gsd:new-agent
 **Goal**: Users can run `/gsd:new-agent` and create a new agent through a guided conversation that captures purpose, domain, mode, triggers, scope (for autonomous agents), and output type. A decision gate shows the complete agent definition before any file is written. On confirmation, the role block is appended to TEAM.md and an agent markdown file is created at `agents/gsd-agent-{slug}.md` if the agent requires a custom prompt. Agent creation plans bypass the review pipeline.
@@ -244,7 +248,7 @@ Plans:
 | 7. Agent Dispatcher | 0/2 | Not started | - |
 | 8. Team Roster /gsd:team | 0/2 | Not started | - |
 | 9. Lifecycle Trigger Hooks | 0/2 | Not started | - |
-| 10. Advisory Output to Planner | 0/TBD | Not started | - |
+| 10. Advisory Output to Planner | 0/2 | Not started | - |
 | 11. Agent Creation /gsd:new-agent | 0/TBD | Not started | - |
 | 12. New-Project Integration | 0/TBD | Not started | - |
 
