@@ -1,0 +1,2 @@
+/c/Users/gutie/.claude/get-shit-done-review-team/workflows/new-agent.md
+/c/Users/gutie/.claude/commands/gsd/new-agent.md

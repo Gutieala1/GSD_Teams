@@ -20,14 +20,14 @@ The installer:
 1. Detects your GSD installation (`~/.claude/get-shit-done` or `./.claude/get-shit-done`)
 2. Checks GSD version compatibility (warns if outside tested range 1.19.x)
 3. Copies extension files to `~/.claude/get-shit-done-review-team/`
-4. Copies `/gsd:new-reviewer` command to `~/.claude/commands/gsd/`
+4. Copies Agent Studio commands (`/gsd:new-agent`, `/gsd:team`) to `~/.claude/commands/gsd/`
 5. Patches `execute-plan.md` to add the `review_team_gate` step
 6. Patches `settings.md` to add the Review Team toggle
 7. Creates `.planning/TEAM.md` from the starter template (if it does not already exist)
 
 ## Post-`/gsd:update` Procedure
 
-`/gsd:update` replaces GSD core files, which removes the patches this extension applies to `execute-plan.md` and `settings.md`. It also wipes `~/.claude/commands/gsd/`, removing `/gsd:new-reviewer`.
+`/gsd:update` replaces GSD core files, which removes the patches this extension applies to `execute-plan.md` and `settings.md`. It also wipes `~/.claude/commands/gsd/`, removing the Agent Studio commands.
 
 **After every `/gsd:update`, re-run the installer:**
 
@@ -38,7 +38,7 @@ bash /path/to/gsd-review-team/install.sh
 This restores:
 - The `review_team_gate` step in `execute-plan.md`
 - The Review Team toggle in `settings.md`
-- The `/gsd:new-reviewer` command
+- The Agent Studio commands (`/gsd:new-agent`, `/gsd:team`)
 
 Note: The extension's own files in `~/.claude/get-shit-done-review-team/` are NOT wiped by `/gsd:update` — only the GSD core directories are affected. Your `.planning/TEAM.md` is also preserved (it lives in your project, not in GSD directories).
 
@@ -99,7 +99,7 @@ If TEAM.md has zero valid roles, the pipeline halts before sanitization.
 
 **Guided conversation:**
 ```
-/gsd:new-reviewer
+/gsd:new-agent
 ```
 
 **Manual:** Copy a role section from the starter template and customize it.
@@ -141,4 +141,4 @@ The installer ships three ready-to-use roles:
 
 **"REVIEW PIPELINE HALTED — zero valid roles"** — TEAM.md exists but no role passes validation. Check that each role has `## Role:`, a YAML block with `name:`, and a `**What this role reviews:**` list.
 
-**`/gsd:new-reviewer` not found after `/gsd:update`** — Re-run `bash install.sh` to restore the command.
+**Agent Studio commands not found after `/gsd:update`** — Re-run `bash install.sh` to restore `/gsd:new-agent` and `/gsd:team`.

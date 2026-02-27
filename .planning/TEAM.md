@@ -10,7 +10,7 @@ roles:
 Define your reviewer roles below. Each role runs in isolation — it sees only the sanitized
 execution artifact, never the plan, executor reasoning, or prior summaries.
 
-Run `/gsd:new-reviewer` to add a role through a guided conversation, or customize the
+Run `/gsd:new-agent` to add a role through a guided conversation, or customize the
 starter roles below directly.
 
 ---

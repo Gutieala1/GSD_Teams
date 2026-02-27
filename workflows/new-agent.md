@@ -721,7 +721,6 @@ roles:
 # Agent Team
 
 Define your agent roles below. Run `/gsd:new-agent` to create additional roles through a guided conversation.
-Run `/gsd:new-reviewer` to create a post-plan advisory reviewer role.
 
 ---
 

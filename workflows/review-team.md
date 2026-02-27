@@ -66,7 +66,7 @@ Each role requires:
 2. A YAML code block with a `name:` field
 3. At least one review criteria item under `**What this role reviews:**`
 
-Run `/gsd:new-reviewer` to create your first reviewer role.
+Run `/gsd:new-agent` to create your first reviewer role.
 ```
 
 HALT the pipeline. Do NOT proceed to sanitization. This satisfies TEAM-03.

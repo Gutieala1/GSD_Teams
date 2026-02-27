@@ -14,7 +14,7 @@ View and manage all configured agents in `.planning/TEAM.md`.
 Displays a formatted roster table with name, mode, triggers, output_type, and enabled status.
 Disabled agents appear in the table but are visually distinguished.
 
-From the roster: add an agent (→ `/gsd:new-reviewer`), remove an agent with confirmation,
+From the roster: add an agent (→ `/gsd:new-agent`), remove an agent with confirmation,
 enable or disable an agent, invoke an agent on-demand against a specified artifact, or view
 agent history from AGENT-REPORT.md.
 

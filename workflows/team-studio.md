@@ -29,7 +29,7 @@ Load and display the agent roster from .planning/TEAM.md.
 ```
 
 If the output is "MISSING":
-  Inform the user: "No TEAM.md found at .planning/TEAM.md. Run `/gsd:new-reviewer` to create
+  Inform the user: "No TEAM.md found at .planning/TEAM.md. Run `/gsd:new-agent` to create
   your first agent role."
   Exit the workflow.
 

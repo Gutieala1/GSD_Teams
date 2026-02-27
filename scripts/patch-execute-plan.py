@@ -51,7 +51,7 @@ If `REVIEW_TEAM_ENABLED` is `"true"`:
   ```bash
   [ -f .planning/TEAM.md ] && echo "EXISTS" || echo "MISSING"
   ```
-- If TEAM.md is missing: log `Review Team: skipped (no .planning/TEAM.md found — run /gsd:new-reviewer to create your first role)` and continue to `offer_next`. Do NOT block execution.
+- If TEAM.md is missing: log `Review Team: skipped (no .planning/TEAM.md found — run /gsd:new-agent to create your first role)` and continue to `offer_next`. Do NOT block execution.
 - If TEAM.md exists: load and execute the review pipeline:
   ```
   @~/.claude/get-shit-done-review-team/workflows/review-team.md
