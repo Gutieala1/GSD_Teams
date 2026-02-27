@@ -1,9 +1,9 @@
 <purpose>
 Team Studio — the interactive roster management workflow for /gsd:team. Displays all agents
 from .planning/TEAM.md in a formatted table, then presents an action menu that loops until
-the user selects "Done". Supports: enable/disable toggle, remove with confirmation gate,
-on-demand invocation against a specified artifact (logged to AGENT-REPORT.md), history view,
-and add-agent fallback to /gsd:new-reviewer.
+the user selects "Done". Supports: view/edit agent prompt, enable/disable toggle, remove with
+confirmation gate, on-demand invocation against a specified artifact (logged to AGENT-REPORT.md),
+history view, and add-agent fallback to /gsd:new-agent.
 
 Source path:    D:/GSDteams/workflows/team-studio.md
 Installed path: ~/.claude/get-shit-done-review-team/workflows/team-studio.md
@@ -98,36 +98,154 @@ Proceed to present_actions.
 <step name="present_actions">
 Present the action menu and route to the appropriate sub-step.
 
-Use AskUserQuestion:
+AskUserQuestion has a max of 4 options per question. Use TWO questions to cover all actions:
+
+```
+AskUserQuestion([
+  {
+    question: "What would you like to do?",
+    header: "Team Roster",
+    multiSelect: false,
+    options: [
+      { label: "View / Edit prompt", description: "Inspect or change an agent's definition" },
+      { label: "Enable / Disable",   description: "Toggle an agent on or off" },
+      { label: "Remove agent",       description: "Delete a role from TEAM.md (with confirmation)" },
+      { label: "Done",               description: "Exit the team roster" }
+    ]
+  },
+  {
+    question: "Or:",
+    header: "More",
+    multiSelect: false,
+    options: [
+      { label: "Run agent now",  description: "Invoke an agent on-demand against a file" },
+      { label: "View history",   description: "Show AGENT-REPORT.md entries for an agent" },
+      { label: "Add agent",      description: "Create a new agent role via /gsd:new-agent" },
+      { label: "Nothing here",   description: "Use the first question above" }
+    ]
+  }
+])
+```
+
+Route based on user selection (first non-"Nothing here" answer wins):
+- "View / Edit prompt" → view_edit_prompt step
+- "Enable / Disable"   → toggle_enabled step
+- "Remove agent"       → remove_agent step
+- "Done"               → exit the workflow
+- "Run agent now"      → invoke_on_demand step
+- "View history"       → view_history step
+- "Add agent"          → add_agent step
+- "Nothing here"       → re-present the action menu (user chose neither question)
+
+After each sub-step completes, return here and present the action menu again.
+Only "Done" exits the loop.
+</step>
+
+<step name="view_edit_prompt">
+View an agent's full prompt definition and optionally edit it in place.
+
+**1. Present agent selection**
+
+Use AskUserQuestion with one option per agent in the roster, plus Cancel:
 
 ```
 AskUserQuestion([{
-  question: "What would you like to do?",
-  header: "Team Roster",
+  question: "Which agent do you want to view or edit?",
+  header: "View / Edit",
   multiSelect: false,
   options: [
-    { label: "Enable / Disable", description: "Toggle an agent on or off" },
-    { label: "Remove agent",     description: "Delete a role from TEAM.md (with confirmation)" },
-    { label: "Run agent now",    description: "Invoke an agent on-demand against a file" },
-    { label: "View history",     description: "Show AGENT-REPORT.md entries for an agent" },
-    { label: "Add agent",        description: "Create a new agent role" },
-    { label: "Done",             description: "Exit the team roster" }
+    // one entry per agent:
+    { label: "{agent.name}", description: "{agent.mode} · {agent.trigger} · {status}" },
+    // plus:
+    { label: "Cancel", description: "Return to roster without changes" }
   ]
 }])
 ```
 
-Header constraint: "Team Roster" = 11 characters (compliant with ≤12 character convention).
+If Cancel: return to present_actions.
 
-Route based on user selection:
-- "Enable / Disable" → toggle_enabled step
-- "Remove agent"     → remove_agent step
-- "Run agent now"    → invoke_on_demand step
-- "View history"     → view_history step
-- "Add agent"        → add_agent step
-- "Done"             → exit the workflow
+**2. Display the full prompt**
 
-After each sub-step completes, return here and present the action menu again.
-Only "Done" exits the loop.
+Read `.planning/TEAM.md` with the Read tool.
+
+Extract the full `## Role: {slug}` section:
+  - Start: the line `## Role: {slug}`
+  - End: the next `---` separator line, OR end of file if no subsequent separator
+  - Include the heading line; do NOT include the trailing `---`
+
+Display the extracted block verbatim as a fenced markdown code block so the user can
+read every field: name, focus, mode, trigger, output_type, enabled, what it reviews,
+severity thresholds, and routing hints.
+
+**3. Ask view-only or edit**
+
+```
+AskUserQuestion([{
+  question: "What do you want to do with this agent?",
+  header: "View / Edit",
+  multiSelect: false,
+  options: [
+    { label: "Edit prompt",  description: "Change one or more sections of this agent's definition" },
+    { label: "Done viewing", description: "Return to the roster" }
+  ]
+}])
+```
+
+If "Done viewing": return to present_actions.
+
+**4. Edit prompt — section selection**
+
+```
+AskUserQuestion([{
+  question: "Which section do you want to edit?",
+  header: "Edit Section",
+  multiSelect: false,
+  options: [
+    { label: "Focus / purpose",     description: "The one-line focus field in the YAML block" },
+    { label: "What it reviews",     description: "The bullet list of review criteria" },
+    { label: "Severity thresholds", description: "critical / major / minor definitions" },
+    { label: "Routing hints",       description: "block_and_escalate / send_for_rework / log_and_continue rules" }
+  ]
+}])
+```
+
+**5. Show current content and ask for new content**
+
+Display the current content of the selected section clearly.
+
+Then ask the user (inline text, NOT AskUserQuestion — just a plain text prompt):
+"Enter the new content for this section. Type it out and press Enter when done."
+
+Accept the user's free-text response as `new_content`.
+
+**6. Write updated TEAM.md (Read-then-Write)**
+
+1. Read current `.planning/TEAM.md` with the Read tool (re-read for latest content)
+2. Locate the `## Role: {slug}` section
+3. Find the targeted section within it:
+   - "Focus / purpose" → update the `focus:` value in the YAML config block
+   - "What it reviews" → replace the entire `**What this role reviews:**` bullet block
+   - "Severity thresholds" → replace the entire `**Severity thresholds:**` bullet block
+   - "Routing hints" → replace the entire `**Routing hints:**` bullet block
+4. Apply the replacement using the Edit tool (targeted string replace, not full file rewrite)
+5. Announce: "Updated '{section}' for agent '{agent.name}'."
+
+**7. Offer to edit another section**
+
+```
+AskUserQuestion([{
+  question: "Edit another section of this agent?",
+  header: "Edit Section",
+  multiSelect: false,
+  options: [
+    { label: "Yes, edit another section", description: "Choose a different section to update" },
+    { label: "No, done editing",          description: "Return to the roster" }
+  ]
+}])
+```
+
+If "Yes": return to step 4 (section selection) for the same agent.
+If "No": return to present_actions.
 </step>
 
 <step name="toggle_enabled">
