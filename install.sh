@@ -169,10 +169,25 @@ if [ ! -f "$SETTINGS" ]; then
   exit 1
 fi
 
+PLAN_PHASE="$GSD_DIR/get-shit-done/workflows/plan-phase.md"
+EXECUTE_PHASE="$GSD_DIR/get-shit-done/workflows/execute-phase.md"
+
+if [ ! -f "$PLAN_PHASE" ]; then
+  echo "  ERROR: $PLAN_PHASE not found"
+  exit 1
+fi
+
+if [ ! -f "$EXECUTE_PHASE" ]; then
+  echo "  ERROR: $EXECUTE_PHASE not found"
+  exit 1
+fi
+
 python3 "$EXT_DIR/scripts/patch-execute-plan.py" "$EXECUTE_PLAN"
 python3 "$EXT_DIR/scripts/patch-settings.py" "$SETTINGS"
 python3 "$EXT_DIR/scripts/patch-settings-agent-studio.py" "$SETTINGS"
 python3 "$EXT_DIR/scripts/patch-execute-plan-dispatcher.py" "$EXECUTE_PLAN"
+python3 "$EXT_DIR/scripts/patch-plan-phase.py" "$PLAN_PHASE"
+python3 "$EXT_DIR/scripts/patch-execute-phase.py" "$EXECUTE_PHASE"
 
 # ------------------------------------------------------------------------------
 # Section 7: config.json update
@@ -237,6 +252,8 @@ echo ""
 echo "  Patches applied:"
 echo "    - execute-plan.md (review_team_gate step + dispatcher wiring)"
 echo "    - settings.md (Review Team toggle + Agent Studio toggle)"
+echo "    - plan-phase.md (pre_plan_agent_gate step)"
+echo "    - execute-phase.md (post_phase_agent_gate step)"
 echo ""
 echo "  IMPORTANT: After running /gsd:update, re-run 'bash install.sh'"
 echo "  to restore patches and the /gsd:new-reviewer command."
