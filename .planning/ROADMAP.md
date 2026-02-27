@@ -140,7 +140,7 @@ than replaces.
 - [ ] **Phase 7: Agent Dispatcher** — Single routing layer live, post-plan path wired through dispatcher to existing review pipeline, no-op on empty match
 - [ ] **Phase 8: Team Roster /gsd:team** — Users can view, enable/disable, and invoke agents from the roster command
 - [ ] **Phase 9: Lifecycle Trigger Hooks** — Pre-plan and post-phase agent gates patched into GSD core workflows, on-demand invoke path live
-- [ ] **Phase 10: Advisory Output to Planner** — Pre-plan advisory agent notes injected into planner Task() context, planner always produces a plan
+- [x] **Phase 10: Advisory Output to Planner** — Pre-plan advisory agent notes injected into planner Task() context, planner always produces a plan (completed 2026-02-27)
 - [ ] **Phase 11: Agent Creation /gsd:new-agent** — Users can create agents through guided conversation, definition written to TEAM.md and agents/ directory
 - [ ] **Phase 12: New-Project Integration** — Single question at project init, project-aware agent proposals, delegates to /gsd:new-agent
 
@@ -248,7 +248,7 @@ Plans:
 | 7. Agent Dispatcher | 0/2 | Not started | - |
 | 8. Team Roster /gsd:team | 0/2 | Not started | - |
 | 9. Lifecycle Trigger Hooks | 0/2 | Not started | - |
-| 10. Advisory Output to Planner | 0/2 | Not started | - |
+| 10. Advisory Output to Planner | 0/2 | Complete    | 2026-02-27 |
 | 11. Agent Creation /gsd:new-agent | 0/TBD | Not started | - |
 | 12. New-Project Integration | 0/TBD | Not started | - |
 

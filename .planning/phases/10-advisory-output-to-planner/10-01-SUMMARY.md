@@ -123,3 +123,15 @@ None - no external service configuration required.
 ---
 *Phase: 10-advisory-output-to-planner*
 *Completed: 2026-02-27*
+
+## Self-Check: PASSED
+
+- scripts/patch-plan-phase-p10.py: FOUND
+- C:/Users/gutie/.claude/get-shit-done/workflows/plan-phase.md: FOUND
+- D:/GSDteams/install.sh: FOUND
+- 10-01-SUMMARY.md: FOUND
+- Commit 327510c: FOUND
+- Commit 3c12db5: FOUND
+- AGENT_NOTES in patch script: FOUND
+- {AGENT_NOTES} in plan-phase.md: FOUND
+- patch-plan-phase-p10 in install.sh: FOUND
