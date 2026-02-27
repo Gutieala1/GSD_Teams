@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 ## Current Position
 
-Phase: 08-team-roster-gsd-team ✅ COMPLETE (verified 3/3)
-Next phase: 09-lifecycle-trigger-hooks
-Status: Phase 08 complete — ready to plan Phase 09
-Last activity: 2026-02-27 — Phase 08 verified 3/3, all success criteria met
+Phase: 09-lifecycle-trigger-hooks — plan 01 of 3 complete
+Next phase: 09-lifecycle-trigger-hooks (plan 02)
+Status: Phase 09 in progress — 09-01 complete (patch-plan-phase.py delivered)
+Last activity: 2026-02-27 — 09-01 complete, pre_plan_agent_gate wired into plan-phase.md
 
-Progress: [███░░░░░░░] v2.0 — phase 08 complete (3 of 7)
+Progress: [████░░░░░░] v2.0 — phase 09 in progress (plan 01/03 done)
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: [███░░░░░░░] v2.0 — phase 08 complete (3 of 7)
 | Phase 07-agent-dispatcher P02 | 4min | 2 tasks | 2 files |
 | Phase 08-team-roster-gsd-team P01 | 2min | 2 tasks | 3 files |
 | Phase 08-team-roster-gsd-team P02 | 1min | 2 tasks | 2 files |
+| Phase 09-lifecycle-trigger-hooks P01 | 2 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -153,6 +154,9 @@ Key architectural decisions from project initialization:
 - [Phase 08-02]: invoke_on_demand filters to active_roles (enabled != false) only — disabled agents cannot be invoked on-demand
 - [Phase 08-02]: add_agent step: /gsd:new-reviewer for review roles, /gsd:new-agent noted as Phase 11 — no @-reference added (workflow not yet built)
 - [Phase 08-02]: remove_agent shows role block preview before confirmation gate — user sees exactly what will be deleted
+- [Phase 09-01]: Idempotency string pre_plan_agent_gate embedded as HTML comment in inserted section — heading uses hyphens/spaces which don't match underscore identifier used for idempotency check
+- [Phase 09-01]: pre_plan_agent_gate step in plan-phase.md is fail-open: TEAM.md missing, dispatcher error, or config absent all log and proceed silently — plan creation never blocked by gate failure
+- [Phase 09-01]: Phase 10 (ADVY-01) boundary enforced: pre_plan_agent_gate fires dispatcher and displays output but does NOT inject notes into planner Task() prompt in step 8
 
 ### Pending Todos
 
@@ -167,5 +171,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 08-02-PLAN.md — /gsd:team command + team-studio.md 7-step workflow (08-02-SUMMARY.md generated)
+Stopped at: Completed 09-01-PLAN.md — pre_plan_agent_gate patch script + plan-phase.md patched (09-01-SUMMARY.md generated)
 Resume file: None
