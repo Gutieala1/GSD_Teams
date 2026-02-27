@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 ## Current Position
 
-Phase: 09-lifecycle-trigger-hooks — plan 02 of 3 complete
-Next phase: 09-lifecycle-trigger-hooks (plan 03)
-Status: Phase 09 in progress — 09-02 complete (patch-execute-phase.py delivered + install.sh wired)
-Last activity: 2026-02-27 — 09-02 complete, post_phase_agent_gate wired into execute-phase.md; install.sh SC4 idempotency confirmed
+Phase: 09-lifecycle-trigger-hooks ✅ COMPLETE (verified 4/4)
+Next phase: 10-advisory-output-to-planner
+Status: Phase 09 complete — ready to plan Phase 10
+Last activity: 2026-02-27 — Phase 09 verified 4/4, all success criteria met
 
-Progress: [█████░░░░░] v2.0 — phase 09 in progress (plan 02/03 done)
+Progress: [████░░░░░░] v2.0 — phase 09 complete (4 of 7)
 
 ## Performance Metrics
 
