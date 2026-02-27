@@ -141,7 +141,7 @@ than replaces.
 - [ ] **Phase 8: Team Roster /gsd:team** — Users can view, enable/disable, and invoke agents from the roster command
 - [ ] **Phase 9: Lifecycle Trigger Hooks** — Pre-plan and post-phase agent gates patched into GSD core workflows, on-demand invoke path live
 - [x] **Phase 10: Advisory Output to Planner** — Pre-plan advisory agent notes injected into planner Task() context, planner always produces a plan (completed 2026-02-27)
-- [x] **Phase 11: Agent Creation /gsd:new-agent** — Users can create agents through guided conversation, definition written to TEAM.md and agents/ directory (completed 2026-02-27)
+- [x] **Phase 11: Agent Creation /gsd:new-agent** — Users can create agents through guided conversation, definition written to TEAM.md and agents/ directory (completed 2026-02-27)
 - [ ] **Phase 12: New-Project Integration** — Single question at project init, project-aware agent proposals, delegates to /gsd:new-agent
 
 ## Phase Details
@@ -240,7 +240,10 @@ Plans:
   1. After `/gsd:new-project` completes, exactly one question is asked about agent team setup — no additional questions about agent configuration appear in the new-project flow
   2. Choosing "Set up now" produces 2-3 agent proposals derived from PROJECT.md goals and stack — each proposal is shown individually and the user approves, modifies, or skips each one before anything is written
   3. Choosing "Set up later" or "Skip" produces an outcome identical to a v1.0 new-project run — no TEAM.md changes, no agent files created, new-project timing is effectively unchanged
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 12-01-PLAN.md — scripts/patch-new-project.py (agent_team_hook step: auto guard, single AskUserQuestion, Set up now branch with proposals + /gsd:new-agent delegation) + install.sh Section 6 + Section 9 update
 
 ## Progress
 
@@ -254,7 +257,7 @@ Plans:
 | 9. Lifecycle Trigger Hooks | 0/2 | Not started | - |
 | 10. Advisory Output to Planner | 0/2 | Complete    | 2026-02-27 |
 | 11. Agent Creation /gsd:new-agent | 0/2 | Complete    | 2026-02-27 |
-| 12. New-Project Integration | 0/TBD | Not started | - |
+| 12. New-Project Integration | 0/1 | Not started | - |
 
 ## v2 Coverage
 
