@@ -45,6 +45,7 @@ Progress: [██░░░░░░░░] v2.0 — phase 07 in progress (2 of 7
 | Phase 05-new-reviewer-starter-roles-docs P03 | ~10 | 2 tasks | 2 files |
 | Phase 06-team-md-v2-schema-config-foundation P01 | ~2 | 2 tasks | 2 files |
 | Phase 06-team-md-v2-schema-config-foundation P02 | 2 | 2 tasks | 2 files |
+| Phase 07-agent-dispatcher P01 | 2min | 1 task | 1 file |
 | Phase 07-agent-dispatcher P02 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
@@ -132,6 +133,12 @@ Key architectural decisions from project initialization:
 - [Phase 06-02]: Anchors target post-review-team-patch state of settings.md — Touch point 1 anchors on Review Team closing block (not original un-patched content)
 - [Phase 06-02]: Single jq pipe filter for Section 7 multi-key update — avoids race condition from two separate mktemp/mv sequences
 - [Phase 06-02]: workflow.agent_studio is an independent boolean flag — does not affect workflow.review_team; both can be true simultaneously
+- [Phase 07-01]: Bypass flag extracted from PLAN.md inside dispatcher (not in calling review_team_gate step) — keeps bypass logic co-located with dispatcher, architecturally cleaner
+- [Phase 07-01]: PLAN_PATH derived from summary_path by replacing -SUMMARY.md with -PLAN.md when plan_path input not provided — reliable because naming convention is consistent
+- [Phase 07-01]: Dispatcher reads AGENT_STUDIO_ENABLED from CONFIG_CONTENT already in scope — no re-read of config.json needed
+- [Phase 07-01]: Advisory route passes SUMMARY_PATH/PHASE_ID/PLAN_NUM to review-team.md without pre-filtered role list — review-team.md reads TEAM.md itself, dispatcher is a pure adapter
+- [Phase 07-01]: version < 2 numeric comparison explicit in both prose and pseudocode — integer sentinel is the contract, string comparison explicitly rejected
+- [Phase 07-01]: Autonomous stub uses role.name in log message for identifiability — informs operator which role was skipped
 - [Phase 07-02]: Anchor uses full review_team_gate step body for clean step replacement via content.replace(anchor, new_body, 1)
 - [Phase 07-02]: Idempotency check uses 'agent-dispatcher.md' in content — unique string only present after dispatcher patch applied
 - [Phase 07-02]: Dispatcher patch is 4th in install.sh Section 6 ordering — patch-execute-plan.py inserts step first, dispatcher patch replaces step body second
@@ -150,5 +157,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 07-02-PLAN.md — patch-execute-plan-dispatcher.py created + install.sh updated for dispatcher wiring
+Stopped at: Completed 07-01-PLAN.md — workflows/agent-dispatcher.md created (07-01-SUMMARY.md generated)
 Resume file: None
