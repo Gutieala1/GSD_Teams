@@ -1,9 +1,10 @@
 ---
-version: 1
+version: 2
 roles:
   - security-auditor
   - rules-lawyer
   - performance-analyst
+  - code-quality-checker
 ---
 
 # Review Team
@@ -85,6 +86,36 @@ focus: Performance implications of new code and architectural decisions
 - `critical`: O(n²) on unbounded production data, blocking main thread
 - `major`: Missing pagination, N+1 query pattern, sync where async required
 - `minor`: Suboptimal algorithm choice on small/bounded data
+
+**Routing hints:**
+- Critical findings: `block_and_escalate`
+- Major findings: `send_for_rework`
+- Minor findings: `log_and_continue`
+
+---
+
+## Role: Code Quality Checker
+
+```yaml
+name: code-quality-checker
+focus: Flags code quality issues and reports them for fixing
+mode: advisory
+trigger: post-phase
+output_type: findings
+enabled: true
+```
+
+**What this role reviews:**
+- Does the implementation match the plan's stated requirements and tasks?
+- Are coding conventions consistent with the existing codebase?
+- Is error handling present and consistent with existing patterns?
+- Are logging patterns used appropriately (not missing, not excessive)?
+- Are there obvious gaps in test coverage for new code paths?
+
+**Severity thresholds:**
+- `critical`: Deploy-stopper bugs, requirement violated, or security breach risk
+- `major`: Missing required behavior, inconsistent conventions, poor error handling
+- `minor`: Minor style deviation, suboptimal logging, small coverage gap
 
 **Routing hints:**
 - Critical findings: `block_and_escalate`
