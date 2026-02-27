@@ -169,7 +169,11 @@ Plans:
   1. The existing post-plan path (review_team_gate calling review-team.md) is redirected through agent-dispatcher.md — advisory post-plan agents reach the same review pipeline, producing identical REVIEW-REPORT.md output
   2. When TEAM.md has no agents matching the current trigger context, dispatcher exits immediately with no Task() spawns and no observable latency
   3. Agent creation plans are skipped by the dispatcher — the bypass flag in plan context is detected and the review pipeline does not fire on agent definition artifacts
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — workflows/agent-dispatcher.md (4-step dispatcher: bypass check, TEAM.md parse + normalizeRole, trigger filter, mode routing)
+- [ ] 07-02-PLAN.md — scripts/patch-execute-plan-dispatcher.py (review_team_gate body replacement) + install.sh updated
 
 ### Phase 8: Team Roster /gsd:team
 **Goal**: Users can run `/gsd:team` to see all configured agents: name, mode, triggers, output_type, and enabled status. From the roster, users can add an agent (routed to /gsd:new-agent), remove an agent with confirmation, enable or disable an agent, and invoke an agent on-demand against a specified artifact.
@@ -229,7 +233,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 6. TEAM.md v2 Schema + Config Foundation | 0/2 | Not started | - |
-| 7. Agent Dispatcher | 0/TBD | Not started | - |
+| 7. Agent Dispatcher | 0/2 | Not started | - |
 | 8. Team Roster /gsd:team | 0/TBD | Not started | - |
 | 9. Lifecycle Trigger Hooks | 0/TBD | Not started | - |
 | 10. Advisory Output to Planner | 0/TBD | Not started | - |
