@@ -5,6 +5,7 @@ roles:
   - rules-lawyer
   - performance-analyst
   - code-quality-checker
+  - efficiency-auditor
 ---
 
 # Review Team
@@ -128,6 +129,46 @@ enabled: true
 - `critical`: PLAN.md requires email verification on signup, but the implemented registration handler marks the user immediately active without sending a verification email — a stated requirement is directly violated
 - `major`: The `createOrder()` function is missing the input validation step described in the plan's task list; it accepts arbitrary product IDs without existence checks, inconsistent with the validation pattern used in `updateOrder()`
 - `minor`: `parseConfig()` uses `console.log()` for debug output rather than the project's `logger` utility, inconsistent with the logging pattern used in the rest of the codebase
+
+**Routing hints:**
+- Critical findings: `block_and_escalate`
+- Major findings: `send_for_rework`
+- Minor findings: `log_and_continue`
+
+---
+
+## Role: Efficiency Auditor
+
+```yaml
+name: efficiency-auditor
+focus: Flags prompt bloat and code inefficiencies that waste tokens or processing without improving output
+mode: advisory
+trigger: post-plan
+output_type: findings
+enabled: true
+```
+
+**What this role reviews:**
+- Are workflow instruction blocks concise — do they contain redundant sentences or verbose rules that could be shortened without losing meaning?
+- Are new code functions free of unnecessary intermediate variables, redundant conditionals, or over-abstracted logic that adds complexity without benefit?
+- Are agent prompts free of duplicated context — do they repeat information the agent will already have in its role definition or phase context?
+- Are new dependencies and imports justified — do they avoid duplicating built-in functionality or existing project utilities?
+- Are loop and data transformation patterns efficient — do they avoid re-processing the same data multiple times when a single pass would suffice?
+
+**Patterns to flag:**
+- Duplicated context in prompt: The same information appears in more than one section of an agent prompt, causing the model to process identical tokens twice (e.g., the agent's `focus` is stated in `<objective>` and then repeated verbatim in the opening line of `<role_definition>`)
+- Redundant single-use variable: A variable is assigned once and immediately returned/used on the next line with no intervening logic (e.g., `const result = compute(); return result;` where `return compute()` is equivalent)
+- Repeated data traversal: The same collection is iterated in separate passes when all operations could combine into one (e.g., `items.filter(...).map(...)` as two sequential operations on the same input when one pass would suffice)
+
+**Severity thresholds:**
+- `critical`: Functional regression risk, prompt exceeds context limits, or blocking performance issue
+- `major`: Significant redundancy that degrades quality without breaking it — e.g. prompts 30%+ longer than needed
+- `minor`: Minor verbosity or small optimization opportunity with negligible impact
+
+**Calibration examples:**
+- `critical`: The `phase_context_content` block includes full ROADMAP.md verbatim (8,000+ tokens), pushing the spawned Task() past context limit — agent silently truncates inputs and produces a degraded result
+- `major`: A workflow step repeats the full 12-line sanitization rules block in both step instructions and Task() prompt; removing duplication cuts each prompt by ~400 tokens with no information loss
+- `minor`: A variable is constructed by string concatenation then immediately returned with no further use — could be inlined directly
 
 **Routing hints:**
 - Critical findings: `block_and_escalate`
