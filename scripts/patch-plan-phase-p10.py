@@ -56,12 +56,14 @@ def main():
         sys.exit(0)
 
     # -------------------------------------------------------------------------
-    # Anchor A — Remove old step 13 gate body and rename step 14 → step 13
+    # Anchor A — Remove old step 13 gate body
     # -------------------------------------------------------------------------
     # The old step 13 heading was inserted by the Phase 9 patch. It starts with
     # the heading line and the idempotency HTML comment, and runs until step 14.
-    # We replace the entire old step 13 block (heading + body) such that old
-    # step 14 "Present Final Status" becomes the new step 13.
+    # We remove the entire old step 13 block. Steps 14 and 15 keep their numbers
+    # because adding new step 8 and removing old step 13 are net-zero for steps
+    # 14 and 15 (the planner block shifts from 8 to 9, but the gate removal at
+    # 13 cancels that shift for steps 14 and 15).
 
     anchor_old_gate_heading = '\n## 13. Pre-Plan Agent Gate\n<!-- step: pre_plan_agent_gate -->\n'
     anchor_step14 = '\n## 14. Present Final Status\n'
@@ -92,25 +94,13 @@ def main():
         )
         sys.exit(1)
 
-    # Replace everything from the old step 13 heading up to (not including) step 14,
-    # and rename step 14 → step 13 at the same time.
-    # Before gate: content[:gate_start]
-    # After step14 heading: content[step14_start + len(anchor_step14):]
-    # We replace anchor_step14 with \n## 13. Present Final Status\n
+    # Remove everything from the old step 13 heading up to (not including) step 14.
+    # Steps 14 and 15 retain their numbers — adding new step 8 and removing old
+    # step 13 cancel out, leaving the total step count unchanged.
     content = (
         content[:gate_start]
-        + '\n## 13. Present Final Status\n'
-        + content[step14_start + len(anchor_step14):]
+        + content[step14_start:]
     )
-
-    # Also rename ## 15. Auto-Advance Check → ## 14. Auto-Advance Check
-    # (old step 15 becomes new step 14 after removing old step 13)
-    if '\n## 15. Auto-Advance Check\n' in content:
-        content = content.replace(
-            '\n## 15. Auto-Advance Check\n',
-            '\n## 14. Auto-Advance Check\n',
-            1
-        )
 
     # -------------------------------------------------------------------------
     # Anchor B — Insert new step 8 gate before planner and renumber steps 8-13
