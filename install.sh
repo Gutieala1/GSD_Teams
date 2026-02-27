@@ -171,6 +171,7 @@ fi
 
 python3 "$EXT_DIR/scripts/patch-execute-plan.py" "$EXECUTE_PLAN"
 python3 "$EXT_DIR/scripts/patch-settings.py" "$SETTINGS"
+python3 "$EXT_DIR/scripts/patch-settings-agent-studio.py" "$SETTINGS"
 
 # ------------------------------------------------------------------------------
 # Section 7: config.json update
@@ -182,7 +183,7 @@ CONFIG="$PROJECT_DIR/.planning/config.json"
 if [ -f "$CONFIG" ]; then
   if [ "$HAS_JQ" -eq 1 ]; then
     tmp=$(mktemp)
-    jq 'if .workflow.review_team == null then .workflow.review_team = false else . end' "$CONFIG" > "$tmp" && mv "$tmp" "$CONFIG"
+    jq 'if .workflow.review_team == null then .workflow.review_team = false else . end | if .workflow.agent_studio == null then .workflow.agent_studio = false else . end' "$CONFIG" > "$tmp" && mv "$tmp" "$CONFIG"
   else
     # Python3 fallback when jq is not available
     python3 - "$CONFIG" <<'PYEOF'
@@ -195,13 +196,15 @@ with open(path, 'r', encoding='utf-8') as f:
 workflow = data.setdefault('workflow', {})
 if 'review_team' not in workflow:
     workflow['review_team'] = False
+if 'agent_studio' not in workflow:
+    workflow['agent_studio'] = False
 
 with open(path, 'w', encoding='utf-8') as f:
     json.dump(data, f, indent=2)
     f.write('\n')
 PYEOF
   fi
-  echo "  [OK] config.json: workflow.review_team ensured"
+  echo "  [OK] config.json: workflow.review_team + workflow.agent_studio ensured"
 else
   echo "  [SKIP] No .planning/config.json found (run /gsd:new-project first)"
 fi
@@ -232,7 +235,7 @@ echo "  Extension files: $EXT_INSTALL_DIR"
 echo ""
 echo "  Patches applied:"
 echo "    - execute-plan.md (review_team_gate step)"
-echo "    - settings.md (Review Team toggle)"
+echo "    - settings.md (Review Team toggle + Agent Studio toggle)"
 echo ""
 echo "  IMPORTANT: After running /gsd:update, re-run 'bash install.sh'"
 echo "  to restore patches and the /gsd:new-reviewer command."
