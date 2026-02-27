@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 ## Current Position
 
-Phase: 09-lifecycle-trigger-hooks ✅ COMPLETE (verified 4/4)
-Next phase: 10-advisory-output-to-planner
-Status: Phase 09 complete — ready to plan Phase 10
-Last activity: 2026-02-27 — Phase 09 verified 4/4, all success criteria met
+Phase: 10-advisory-output-to-planner — Plan 02 complete (2/2)
+Next phase: 11-agent-creation-new-agent
+Status: Phase 10 complete — advisory output to planner fully wired
+Last activity: 2026-02-27 — Phase 10 plan 02 complete (dispatcher output_type split routing)
 
-Progress: [████░░░░░░] v2.0 — phase 09 complete (4 of 7)
+Progress: [█████░░░░░] v2.0 — phase 10 complete (5 of 7)
 
 ## Performance Metrics
 
@@ -51,6 +51,8 @@ Progress: [████░░░░░░] v2.0 — phase 09 complete (4 of 7)
 | Phase 08-team-roster-gsd-team P02 | 1min | 2 tasks | 2 files |
 | Phase 09-lifecycle-trigger-hooks P01 | 2 | 1 tasks | 2 files |
 | Phase 09-lifecycle-trigger-hooks P02 | 2 | 2 tasks | 3 files |
+| Phase 10-advisory-output-to-planner P01 | ~2min | 2 tasks | 2 files |
+| Phase 10-advisory-output-to-planner P02 | 2min | 2 tasks | 1 file |
 
 ## Accumulated Context
 
@@ -162,6 +164,13 @@ Key architectural decisions from project initialization:
 - [Phase 09-02]: post_phase_agent_gate idempotency via 'post_phase_agent_gate' in content — no HTML comment needed since string appears directly in <step name="..."> tag
 - [Phase 09-02]: install.sh Section 6 additions are purely additive — PLAN_PHASE and EXECUTE_PHASE variables + existence checks + two new invocations appended after existing four patches
 - [Phase 09-02]: SC4 idempotency confirmed: second full install.sh run shows all six patches print [SKIP]
+- [Phase 10-01]: pre_plan_agent_gate moved before planner Task() call (step 8) — not just a display gate; AGENT_NOTES extracted from dispatcher return and injected into planner system context
+- [Phase 10-01]: patch-plan-phase-p10.py uses content.replace on the full planner Task() call block — injection wraps existing planner prompt with agent_notes prefix
+- [Phase 10-01]: install.sh Section 6 addition for Phase 10 is purely additive — P10_PLAN_PHASE variable + existence check + invocation appended after Phase 09 entries
+- [Phase 10-02]: advisory_notes_roles filter uses output_type == 'notes' exactly; advisory_findings_roles captures everything else (default 'findings') via output_type != 'notes'
+- [Phase 10-02]: notes agents spawn ALL in single message for true parallelism — same pattern as spawn_reviewers in review-team.md (PIPE-01 guarantee)
+- [Phase 10-02]: AGENT_NOTES_BLOCK only included in dispatcher return text when notes agents actually fired — no block when advisory_notes_roles is empty
+- [Phase 10-02]: findings agents at pre-plan trigger: log descriptive warning and skip — no SUMMARY.md exists at pre-plan time, review pipeline cannot run
 
 ### Pending Todos
 
@@ -176,5 +185,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 09-02-PLAN.md — post_phase_agent_gate patch script + execute-phase.md patched + install.sh updated (09-02-SUMMARY.md generated)
+Stopped at: Completed 10-02-PLAN.md — agent-dispatcher.md route_by_mode output_type split routing + SUMMARY.md generated (Phase 10 complete)
 Resume file: None
