@@ -407,32 +407,123 @@ If Cancel: return to present_actions.
 
 **2. Present artifact selection**
 
-Find the 5 most recently modified plan/summary files in .planning/phases/ (excluding AGENT-REPORT.md):
+Find the 3 most recently modified plan/summary files in .planning/phases/ (excluding AGENT-REPORT.md):
 
 ```bash
-find .planning/phases -name "*.md" -not -name "AGENT-REPORT.md" | xargs ls -t 2>/dev/null | head -5
+find .planning/phases -name "*.md" -not -name "AGENT-REPORT.md" | xargs ls -t 2>/dev/null | head -3
 ```
 
-Use AskUserQuestion:
+Use TWO questions (4-option limit per question):
+
+```
+AskUserQuestion([
+  {
+    question: "What artifact should this agent run against?",
+    header: "Select File",
+    multiSelect: false,
+    options: [
+      // one entry per file found (up to 3):
+      { label: "{filename}", description: "{file path}" },
+      // always last in question 1:
+      { label: "Review recent git changes", description: "Run against a git diff — for ad-hoc changes made outside a plan" }
+    ]
+  },
+  {
+    question: "Or:",
+    header: "Select File",
+    multiSelect: false,
+    options: [
+      { label: "Enter path manually", description: "Specify a custom file path" },
+      { label: "Cancel",              description: "Return to roster without changes" },
+      { label: "Nothing here",        description: "Use the first question above" }
+    ]
+  }
+])
+```
+
+Route (first non-"Nothing here" answer wins):
+- A file name → use that file as the artifact; proceed to step 3
+- "Review recent git changes" → proceed to step 2b
+- "Enter path manually" → ask the user for the path as a follow-up question; proceed to step 3
+- "Cancel" → return to present_actions
+
+**2b. Git diff selection**
+
+Only reached if "Review recent git changes" was selected.
+
+First, show context so the user knows what's available:
+
+```bash
+git log --oneline -3 2>/dev/null
+echo "---"
+git status --short 2>/dev/null | head -10
+```
+
+Then ask which scope to diff:
 
 ```
 AskUserQuestion([{
-  question: "What artifact should this agent run against?",
-  header: "Select File",
+  question: "Which changes should the agent review?",
+  header: "Git Diff",
   multiSelect: false,
   options: [
-    // one entry per file found (up to 5):
-    { label: "{filename}", description: "{file path}" },
-    // plus:
-    { label: "Enter path manually", description: "Specify a custom file path" },
-    { label: "Cancel", description: "Return to roster without changes" }
+    { label: "Last commit",      description: "Changes in the most recent commit (git diff HEAD~1 HEAD)" },
+    { label: "Unstaged changes", description: "Current working tree changes not yet staged (git diff)" },
+    { label: "Staged changes",   description: "Changes staged for next commit (git diff --staged)" },
+    { label: "All uncommitted",  description: "Everything since last commit — staged + unstaged (git diff HEAD)" }
   ]
 }])
 ```
 
-If Cancel: return to present_actions.
+Run the selected diff:
 
-If "Enter path manually": ask the user for the path as a follow-up question.
+```bash
+# map selection to git command:
+# "Last commit"      → git diff HEAD~1 HEAD
+# "Unstaged changes" → git diff
+# "Staged changes"   → git diff --staged
+# "All uncommitted"  → git diff HEAD
+
+git diff {scope} --stat 2>/dev/null
+echo "---DIFF---"
+git diff {scope} 2>/dev/null
+```
+
+Store the full output (stat + diff) as `diff_output`.
+
+**If diff_output is empty or contains no `---DIFF---` content:**
+  Announce: "No changes found for '{scope}'. Nothing to review."
+  Return to present_actions.
+
+**If diff_output exceeds 300 lines:**
+  Display only the `--stat` section (file names + line counts).
+
+  Then ask:
+
+  ```
+  AskUserQuestion([{
+    question: "The diff is large. How should the agent review it?",
+    header: "Large Diff",
+    multiSelect: false,
+    options: [
+      { label: "Use full diff",       description: "Pass all changes — agent will prioritize top findings" },
+      { label: "Workflow files only", description: "Filter to .md files (workflows, commands, templates)" },
+      { label: "Script files only",   description: "Filter to .py, .sh, .js, .cjs files" },
+      { label: "Cancel",              description: "Return to roster without running the agent" }
+    ]
+  }])
+  ```
+
+  - "Use full diff"       → use `diff_output` as-is
+  - "Workflow files only" → re-run: `git diff {scope} -- "*.md" 2>/dev/null`; use that as `diff_output`
+  - "Script files only"   → re-run: `git diff {scope} -- "*.py" "*.sh" "*.js" "*.cjs" 2>/dev/null`; use that as `diff_output`
+  - "Cancel"              → return to present_actions
+
+Set:
+- `artifact_content` = `diff_output`
+- `artifact_path` = `"git diff {scope}"`
+
+Proceed to step 3.
 
 **3. Determine phase_id for AGENT-REPORT.md**
 
