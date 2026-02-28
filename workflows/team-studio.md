@@ -434,6 +434,7 @@ AskUserQuestion([
     multiSelect: false,
     options: [
       { label: "Enter path manually", description: "Specify a custom file path" },
+      { label: "Sweep all files",     description: "Run agent across all workflow, script, or phase files" },
       { label: "Cancel",              description: "Return to roster without changes" },
       { label: "Nothing here",        description: "Use the first question above" }
     ]
@@ -444,6 +445,7 @@ AskUserQuestion([
 Route (first non-"Nothing here" answer wins):
 - A file name → use that file as the artifact; proceed to step 3
 - "Review recent git changes" → proceed to step 2b
+- "Sweep all files"           → proceed to step 2c
 - "Enter path manually" → ask the user for the path as a follow-up question; proceed to step 3
 - "Cancel" → return to present_actions
 
@@ -522,6 +524,89 @@ Store the full output (stat + diff) as `diff_output`.
 Set:
 - `artifact_content` = `diff_output`
 - `artifact_path` = `"git diff {scope}"`
+
+Proceed to step 3.
+
+**2c. Sweep all files**
+
+Only reached if "Sweep all files" was selected.
+
+Ask which file scope to sweep:
+
+```
+AskUserQuestion([{
+  question: "Which files should the agent sweep?",
+  header: "Sweep Scope",
+  multiSelect: false,
+  options: [
+    { label: "Workflow files (.md)", description: "All .md files in workflows/ and commands/" },
+    { label: "Script files",        description: "All .py, .sh, .cjs files in scripts/" },
+    { label: "Phase files",         description: "All PLAN.md and SUMMARY.md across .planning/phases/" },
+    { label: "Cancel",              description: "Return to artifact selection" }
+  ]
+}])
+```
+
+If Cancel: return to present_actions.
+
+Collect files based on selection:
+
+```bash
+# Workflow files:
+find workflows/ commands/ -name "*.md" 2>/dev/null | sort
+
+# Script files:
+find scripts/ -name "*.py" -o -name "*.sh" -o -name "*.cjs" 2>/dev/null | sort
+
+# Phase files:
+find .planning/phases/ \( -name "*PLAN.md" -o -name "*SUMMARY.md" \) 2>/dev/null | sort
+```
+
+Show the user a count and the full file list.
+
+**If 0 files found:**
+  Announce: "No {scope} files found."
+  Return to present_actions.
+
+**If >10 files found:**
+  Warn: "Found N files — this will be a large artifact."
+
+  ```
+  AskUserQuestion([{
+    question: "N files found — how would you like to proceed?",
+    header: "Sweep Size",
+    multiSelect: false,
+    options: [
+      { label: "Run anyway",                description: "Concatenate all N files — agent prioritizes top findings" },
+      { label: "Most recently modified 10", description: "Limit sweep to the 10 newest files" },
+      { label: "Cancel",                    description: "Return without running the agent" }
+    ]
+  }])
+  ```
+
+  - "Run anyway"                → proceed with all N files as collected
+  - "Most recently modified 10" → re-run the find command, pipe through `| xargs ls -t | head -10`,
+                                   use those 10 files as the file list
+  - "Cancel"                    → return to present_actions
+
+**Build the combined artifact:**
+
+Read each file in the file list with the Read tool.
+
+Concatenate all content with file headers:
+
+```
+--- {relative/path/to/file.md} ---
+
+{file content}
+
+```
+
+Repeat for every file in the list, separated by a blank line.
+
+Set:
+- `artifact_content` = the full concatenated string
+- `artifact_path` = `"sweep: {scope label} ({N} files)"`
 
 Proceed to step 3.
 
